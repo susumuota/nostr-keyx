@@ -12,6 +12,17 @@ There is already a great extension [nos2x](https://github.com/fiatjaf/nos2x) for
 
 ## Install
 
+### Option 1: Install zip file
+
+- Download the latest zip file from [Releases](https://github.com/susumuota/nostr-keyx/releases).
+- Unzip it. `nostr-keyx-{version}.zip` will be extracted to `nostr-keyx-{version}` folder.
+- Open Chrome's extensions setting page `chrome://extensions`.
+- Turn `Developer mode` on.
+- Click `Load unpacked`.
+- Specify the dist folder `/path/to/nostr-keyx-version`.
+
+### Option 2: Build from source
+
 ```sh
 # install latest stable version of Node.js
 node -v  # I have tested on v18.14.0
@@ -97,14 +108,15 @@ npm run build
 
 ### Test it on Iris or Snort
 
+> **Note**: First, disable similar NIP-07 extensions, e.g. nos2x, Alby, etc.
+
 - Go to extension page and click `Service Worker` to pen dev console of the extension.
-- Turn log level `Verbose` on to show debug logs.
+- Enable log level `Verbose` to show debug logs.
 - Go to [Iris](https://iris.to/) or [Snort](https://snort.social/).
 - Logout if you already logged in.
 - Click `Nostr extension login` for Iris or `Login with Extension (NIP-07)` for Snort. It should use `window.nostr.getPublicKey` to get public key.
 - Post some notes. It should use `window.nostr.signEvent` to sign events with private key.
 - Send/receive direct messages. It should use `window.nostr.nip04.encrypt/decrypt` to encrypt/decrypt messages.
-- Receive direct messages. It should use `window.nostr.nip04.decrypt` to decrypt messages.
 - Logout.
 
 I have tested this extension on Iris and Snort.
@@ -118,10 +130,13 @@ I have tested this extension on Iris and Snort.
 
 ## TODO
 
-- [ ] Prepare a zip file for easy installation.
+- [x] Prepare a zip file for easy installation.
+- [ ] GitHub Actions to build and publish the zip file.
 - [ ] Test `relays`.
 - [ ] Find a way to store the private key securely. Is it possible to use the macOS Keychain (or similar one) from the Chrome extension?
 - [ ] Add profiles to switch multiple accounts.
+- [ ] Minimal UI.
+- [ ] Chrome Web Store?
 
 ## Source code
 
