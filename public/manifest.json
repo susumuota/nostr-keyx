@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+
+  "name": "nostr-keyx",
+  "version": "0.9.0",
+  "description": "A minimal Chrome extension for NIP-07. This extension can prevent your private key from being passed to web-based Nostr clients.",
+  "author": "Susumu OTA",
+  "homepage_url": "https://github.com/susumuota/nostr-keyx",
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "content_scripts": [
+    {
+      "matches": [
+        "https://iris.to/*",
+        "https://snort.social/*",
+        "http://localhost/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+
+  "permissions": [
+    "scripting",
+    "storage"
+  ],
+
+  "host_permissions": [
+    "https://iris.to/*",
+    "https://snort.social/*",
+    "http://localhost/*"
+  ]
+}
