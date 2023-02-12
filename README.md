@@ -41,12 +41,45 @@ npm run build
 
 ### Optional: Generate sample config for testing
 
-> **Note**: I have prepared `bin/generateConfig.ts` to generate a template config with new `privateKey` and `publicKey` for testing. You should test it first. Then use your own keys.
-
+- I have prepared `bin/generateConfig.ts' to generate a template configuration for testing.
 - To generate a template config, run the following command.
 
 ```sh
-npm run generateConfig
+npx ts-node-esm bin/generateConfig.ts
+```
+
+### Optional: Convert Bech32 keys (`nsec...` or `npub...`) to hex format
+
+- If you have keys in Bech32 format (`nsec...` or `npub...`), you can convert them to hex format with `bin/npub2hex.ts`.
+
+```sh
+npx ts-node-esm bin/npub2hex.ts "nsec..."
+npx ts-node-esm bin/npub2hex.ts "npub..."
+```
+
+> **Note**: I recommend using environment variables to store keys to avoid leaking them to the shell history.
+
+- Add keys to `~/.bashrc` and restart your terminal.
+
+```sh
+export NOSTR_NSEC="nsec..."
+export NOSTR_NPUB="npub..."
+```
+
+- Convert to hex format using environment variables.
+
+```sh
+npx ts-node-esm bin/npub2hex.ts $NOSTR_NSEC
+npx ts-node-esm bin/npub2hex.ts $NOSTR_NPUB
+```
+
+- `data` field is the hex encoded key.
+
+```javascript
+{
+  type: 'npub',
+  data: '...'
+}
 ```
 
 ### Set your private and public keys
@@ -108,9 +141,8 @@ npm run build
 
 ### Test it on Iris or Snort
 
-> **Note**: First, disable similar NIP-07 extensions, e.g. nos2x, Alby, etc.
-
-- Go to extension page and click `Service Worker` to pen dev console of the extension.
+- First, disable similar NIP-07 extensions, e.g. nos2x, Alby, etc.
+- Go to extension page and click `Service Worker` to open dev console of the extension.
 - Enable log level `Verbose` to show debug logs.
 - Go to [Iris](https://iris.to/) or [Snort](https://snort.social/).
 - Logout if you already logged in.
@@ -131,9 +163,9 @@ I have tested this extension on Iris and Snort.
 ## TODO
 
 - [x] Prepare a zip file for easy installation.
+- [ ] Find a way to store the private key securely. Is it possible to use the macOS Keychain (or similar one) from the Chrome extension?
 - [ ] GitHub Actions to build and publish the zip file.
 - [ ] Test `relays`.
-- [ ] Find a way to store the private key securely. Is it possible to use the macOS Keychain (or similar one) from the Chrome extension?
 - [ ] Add profiles to switch multiple accounts.
 - [ ] Minimal UI.
 - [ ] Chrome Web Store?
