@@ -1,19 +1,25 @@
 {
   "name": "nostr-keyx",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "description": "A minimal Chrome extension for NIP-07. This extension can prevent your private key from being passed to web-based Nostr clients.",
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "rm -rf dist ; cp -rp public dist ; esbuild --bundle --minify --format=esm src/*.ts --outdir=dist",
-    "watch": "esbuild --watch --bundle --sourcemap=inline --format=esm src/*.ts --outdir=dist",
+    "build": "rm -rf dist ; cp -rp public dist ; cp -p README.md LICENSE dist ; esbuild --bundle --minify --format=esm src/* --outdir=dist",
+    "watch": "esbuild --watch --bundle --sourcemap=inline --format=esm src/* --outdir=dist",
     "generateConfig": "ts-node-esm bin/generateConfig.ts"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/susumuota/nostr-keyx.git"
   },
-  "keywords": ["Nostr", "NIP-07", "Chrome", "extension", "private key"],
+  "keywords": [
+    "Nostr",
+    "NIP-07",
+    "Chrome",
+    "extension",
+    "private key"
+  ],
   "author": "Susumu OTA",
   "license": "MIT",
   "bugs": {
@@ -22,13 +28,20 @@
   "homepage": "https://github.com/susumuota/nostr-keyx#readme",
   "devDependencies": {
     "@tsconfig/node-lts-strictest-esm": "^18.12.1",
-    "@types/chrome": "^0.0.212",
-    "esbuild": "^0.17.7",
+    "@types/chrome": "^0.0.213",
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.10",
+    "esbuild": "^0.17.8",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.5"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@mui/material": "^5.11.8",
     "@noble/secp256k1": "^1.7.1",
-    "@scure/base": "^1.1.1"
+    "@scure/base": "^1.1.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   }
 }
