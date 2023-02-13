@@ -1,4 +1,6 @@
 .vscode
 .DS_Store
 dist
+makezip.sh
 node_modules
+*.zip

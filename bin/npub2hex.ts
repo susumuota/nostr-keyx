@@ -21,10 +21,5 @@ const bech32ToHex = (bech32str: string) => {
 if (process.argv[2]) {
   console.log(bech32ToHex(process.argv[2] as string));
 } else {
-  for await (const line: Buffer of process.stdin) {
-    const bech32str = line.toString().trim();
-    if (bech32str) {
-      console.log(bech32ToHex(bech32str));
-    }
-  }
+  console.log('Usage: npx ts-node-esm bin/npub2hex.ts BECH32TEXT');
 }

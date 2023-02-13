@@ -3,9 +3,10 @@
 
 // https://github.com/nostr-protocol/nips/blob/master/07.md
 
-// use secp.utils.bytesToHex, secp.utils.sha256, secp.schnorr.sign, secp.getSharedSecret
 import * as secp from '@noble/secp256k1';
 import { base64 } from '@scure/base';
+
+import { importKey, decrypt, importData } from './AES';
 
 // Event object.
 // https://github.com/nostr-protocol/nips/blob/master/01.md#events-and-signatures
@@ -22,9 +23,27 @@ type Event = {
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
-const getPrivateKey = async () => (
-  (await chrome.storage.local.get('privateKey'))['privateKey'] as string
+const getCommonKey = async () => (
+  (await chrome.storage.session.get('commonKey'))['commonKey'] as string
 );
+
+const getEncryptedPrivateKey = async () => (
+  (await chrome.storage.local.get('encryptedPrivateKey'))['encryptedPrivateKey'] as string
+);
+
+const getPrivateKey = async () => {
+  const encryptedPrivateKey = await getEncryptedPrivateKey();
+  const commonKey = await getCommonKey();
+  if (encryptedPrivateKey && commonKey) {
+    const aesKey = await importKey(commonKey);
+    const aesData = await importData(encryptedPrivateKey);
+    const decryptedPrivateKey = decoder.decode(await decrypt(aesData, aesKey));
+    // TODO: is it safe to store decryptedPrivateKey in session storage?
+    if (decryptedPrivateKey && decryptedPrivateKey.length === 64) return decryptedPrivateKey;
+  }
+  // return (await chrome.storage.local.get('privateKey'))['privateKey'] as string
+  return ''
+};
 
 const getPublicKey = async () => (
   (await chrome.storage.local.get('publicKey'))['publicKey'] as string
@@ -80,7 +99,6 @@ const NIP_07_APIS = ['getPublicKey', 'signEvent', 'getRelays', 'nip04.encrypt', 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   try {
     console.debug('background.ts: onMessage: request', request);
-    console.debug('background.ts: onMessage: sender', sender);
 
     // check request type
     const { id, type, arg }: { id: string, type: string, arg: any } = request;
