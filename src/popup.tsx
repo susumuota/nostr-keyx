@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Susumu OTA <1632335+susumuota@users.noreply.github.com>
 // SPDX-License-Identifier: MIT
 
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { AppBar, Box, Button, Container, createTheme, CssBaseline, Link, Paper, Snackbar, TextField, ThemeProvider, Toolbar, Typography } from '@mui/material';
 import * as secp from '@noble/secp256k1';
