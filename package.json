@@ -1,13 +1,13 @@
 {
   "name": "nostr-keyx",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A minimal Chrome extension for NIP-07. This extension can prevent your private key from being passed to web-based Nostr clients.",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "rm -rf dist ; cp -rp public dist ; cp -p README.md LICENSE dist ; esbuild --bundle --minify --format=esm src/* --outdir=dist",
     "watch": "esbuild --watch --bundle --sourcemap=inline --format=esm src/* --outdir=dist",
-    "generateConfig": "ts-node-esm bin/generateConfig.ts"
+    "genkey": "ts-node-esm bin/genkey.ts"
   },
   "repository": {
     "type": "git",
