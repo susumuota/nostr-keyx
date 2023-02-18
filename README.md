@@ -2,23 +2,15 @@
 
 A minimal Chrome extension for [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md).
 
-This extension can protect your private key from being passed to web-based Nostr clients such as [Iris](https://iris.to/) or [Snort](https://snort.social/).
+This extension can prevent your private key from being passed to web-based Nostr clients such as [Iris](https://iris.to/) or [Snort](https://snort.social/).
 
-- **[OS native keychain application support (macOS)](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac)**
+- Only ~200 lines (without UI)
+- Easy to read (I hope)
 - Minimal dependencies ([`@noble/secp256k1`](https://github.com/paulmillr/noble-secp256k1) and [`@scure/base`](https://github.com/paulmillr/scure-base))
-- Multiple accounts (private keys) support
 
-![keychain](https://user-images.githubusercontent.com/1632335/219872255-2f5fed2d-d791-4091-b2a1-d07aedff916b.png)
-
-![popup](https://user-images.githubusercontent.com/1632335/219871820-efb079ad-1bb0-4157-b327-a963e57ef453.png)
-
-There are already great extensions like [nos2x](https://github.com/fiatjaf/nos2x) or [Alby](https://getalby.com/) for [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md). Unlike these existing extensions, `nostr-keyx` uses **OS native keychain application** (e.g. [Keychain Access](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac) on macOS) to protect your private key. This extension does not store your private key in the local storage of the web browser. Instead, it stores it in the OS native keychain applications. Also, all [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md) functions (`signEvent`, `encrypt`, `decrypt`, etc.) are executed outside the web browser memory space. So it might be less risky than other methods. I hope this extension helps you too.
+There is already a great extension [nos2x](https://github.com/fiatjaf/nos2x) for [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md). But I made a minimal extension to fully understand how it works and to find out the potential risks. I hope this extension will help you as well.
 
 ## Install
-
-### Note for Windows and Linux (work in progress)
-
-> **Note**: Currently, the latest version only supports macOS. Please use previous version [`v1.0.1`](https://github.com/susumuota/nostr-keyx/tree/v1.0.1) with AES encryption for the private key protection instead.
 
 ### Option 1: Install from zip file
 
@@ -33,7 +25,7 @@ There are already great extensions like [nos2x](https://github.com/fiatjaf/nos2x
 
 ```sh
 # install latest stable version of Node.js
-node -v  # I have tested on v18.14.1
+node -v  # I have tested on v18.14.0
 git clone https://github.com/susumuota/nostr-keyx.git
 cd nostr-keyx
 npm ci
@@ -45,113 +37,49 @@ npm run build
 - Click `Load unpacked`.
 - Specify the dist folder `/path/to/nostr-keyx/dist`.
 
-### Install Node.js
-
-- This version of `nostr-keyx` uses [Node.js](https://nodejs.org/) to communicate with OS native keychain applications.
-- Install [Node.js](https://nodejs.org/). e.g. `brew install node` for Homebrew.
-- Memo the path of `node` command. e.g. `/usr/local/bin/node`. Later, you need to change the [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) of `dist/keychain.js` to specify the absolute path of `node` command.
-
-```sh
-which node
-```
-
 ## Settings
 
-### Setup Chrome's Native Messaging
+### Set your private key and password.
 
-- This extension uses [Chrome's Native Messaging](https://developer.chrome.com/docs/apps/nativeMessaging/) to communicate with OS native keychain applications.
-- Here, you need to change 2 lines in `dist/io.github.susumuota.nostr_keyx.json`.
-  - Change `path` to specify the absolute path of `keychain.js`.
-  - Change `allowed_origins` to specify the `id` of the extension. You can find the `id` of the extension in Chrome's extensions setting page `chrome://extensions`.
+- Pin this extension icon to the Chrome's toolbar.
+- Open extension's popup menu.
 
-```json
+![popup](https://user-images.githubusercontent.com/1632335/218505769-b9611599-3f34-4264-9a1d-edc95991efde.png)
+
+- Input your private key (`nsec...`) and password. This password is used to encrypt your private key.
+- Click `Save`.
+
+> **Note**: It generates an AES key (common key) from your password and then encrypts your private key with it. Your private key is stored in encrypted form in `chrome.store.local` (on the file system). And the AES key is stored in `chrome.store.session` (in memory). When you quit Chrome, `chrome.store.session` is deleted. So you will have to enter the password again the next time you start Chrome. If you want to store your AES key in `chrome.store.local`, you can change `chrome.store.session` to `chrome.store.local` in `src/background.ts` and `src/popup.tsx`. However, this will make your private key less secure. I may add an option in the future to choose whether to store the AES key in `chrome.store.local` or `chrome.store.session` to avoid entering the password every time. See [this document](https://developer.chrome.com/docs/extensions/reference/storage/#storage-areas) for more details about Chrome's local storage.
+
+- If you input the wrong private key or password, click `Clear` to clear the settings (it will call `chrome.storage.local.clear()` and `chrome.storage.session.clear()`). Then input the correct one again.
+- Confirm settings. Open dev console of the extension and run the following commands.
+
+```javascript
+await chrome.storage.local.get();
+```
+
+- It should show something like this. If your public key is correct, it succeeded to add private key because public key is derived from private key.
+
+```javascript
 {
-  "name": "io.github.susumuota.nostr_keyx",
-  "description": "A minimal Chrome extension for NIP-07. This extension can prevent your private key from being passed to web-based Nostr clients.",
-  "path": "/Users/username/Documents/chromeext/nostr-keyx/dist/keychain.js",
-  "type": "stdio",
-  "allowed_origins": [
-    "chrome-extension://jhpjgkhjimkbjiigognoefgnclgngklh/"
-  ]
+  encryptedPrivateKey: '["base64 string","base64 string","base64 string"]',
+  publicKey: 'hex encoded public key'
 }
 ```
 
-- Copy `dist/io.github.susumuota.nostr_keyx.json` to [`NativeMessagingHosts` directory](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host-location).
-
-```sh
-cp -p dist/io.github.susumuota.nostr_keyx.json ~/Library/Application\ Support/Google/Chrome/NativeMessagingHosts
+```javascript
+await chrome.storage.session.get();
 ```
 
-- Edit shebang of `dist/keychain.js` to specify the absolute path of `node` command. Or edit `src/keychain.ts` and run `npm run build`. [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) means the first line of the script file. e.g. `#!/usr/local/bin/node`.
-
-```sh
-#!/usr/local/bin/node
-...
+```javascript
+{
+  commonKey: '["base64 string","base64 string"]'}
+}
 ```
 
-- Test it. Run it with absolute path on Terminal, input some text and enter, then it will show `uncaughtException` error but it's OK. If your shebang is wrong, it will show `no such file or directory` error.
+- Once you have set your private key and password, you can use this extension to sign events and encrypt/decrypt messages.
 
-```sh
-/Users/username/Documents/chromeext/nostr-keyx/dist/keychain.js
-
-11111 # input some text and enter
-z{"id":"","type":"error","result":"uncaughtException. ...
-```
-
-### Set your private key
-
-#### Option 1: Using command `security`
-
-- Here, I show you how to set your private key on Terminal. You can also use GUI [Keychain Access](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac). I will show you later.
-- Copy private key (e.g. `nsec1...`) to clipboard.
-- Open Terminal.
-- Run `security` command to create a new entry for your private key. Here, `-a` is the account name e.g `default`, `-s` is the service name, and `-w` means the password will be asked. `add-generic-password` sub command is used to create a new entry.
-
-```sh
-security add-generic-password -a default -s nostr-keyx -w
-
-password data for new item:     # paste your private key (e.g. nsec1....)
-retype password for new item:   # paste it again
-```
-
-- Confirm that the entry is created. `find-generic-password` sub command will show the password.
-
-```sh
-security find-generic-password -a default -s nostr-keyx -w
-```
-
-- If you want to delete the entry, run `delete-generic-password` sub command.
-
-```sh
-security delete-generic-password -a default -s nostr-keyx
-```
-
-- You can create multiple accounts for multiple private keys. e.g. `default`, `bot`, `test`, etc. But service name must be `nostr-keyx`.
-
-> **Note**: Right now, `security` command can access the private key without password. But you can revoke that by Keychain Access application. See the next section.
-
-#### Option 2: Using GUI [Keychain Access](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac)
-
-- Open spotlight search and type `Keychain Access` and open it.
-- `File` menu > `New Password Item...`
-- Type `nostr-keyx` to `Keychain Item Name` (the first text field).
-- Type `default` to `Account Name` (the second text field).
-- Copy private key (e.g. `nsec1...`) to clipboard.
-- Paste it to `Password` (the third text field).
-- Click `Add`.
-
-![image](https://user-images.githubusercontent.com/1632335/219870202-2a8cbeb7-4acc-40a8-8993-bd0f1be8936d.png)
-
-- You can create multiple accounts for multiple private keys. But make sure that the service name is `nostr-keyx`.
-- Open Terminal and run `security` command to confirm that the private key can be accessed via `security` command.
-
-```sh
-security find-generic-password -a default -s nostr-keyx -w
-```
-
-> **Note**: When you try to access private key, you will be asked to enter your password. You can click `Always Allow` to allow the access without password. When you want to revoke that, you can change the access control of the entry. Right click the entry and select `Get Info`. Then, click `Access Control` tab and click `security` on `Always allow access by these applications:` area then click `-` button to remove it. Now you will be asked to enter your password when you try to access the private key via `security` command.
-
-![image](https://user-images.githubusercontent.com/1632335/219870706-7138cc22-63ff-4191-939c-e17337030abb.png)
+> **Note**: DO NOT forget to input password again if you restart Chrome or reload the extension. Once you have set your private key and password, don't have to input private key again. Just input password and click `Save`.
 
 ### Optional: Add web-based Nostr clients
 
@@ -186,46 +114,34 @@ npm run build
 
 ### Test it on Iris or Snort
 
-- First, disable similar NIP-07 extensions, e.g. nos2x, Alby, etc. On Alby, you only need to disable `NIP-07` section on the settings.
+- First, disable similar NIP-07 extensions, e.g. nos2x, Alby, etc.
 - Go to extension page and click `Service Worker` to open dev console of the extension.
-- If you have used previous versions of this extension, you should clear the extension's cache. Type the following commands in the extension's dev console.
-
-```javascript
-await chrome.storage.local.clear();
-await chrome.storage.session.clear();
-```
-
 - Enable log level `Verbose` to show debug logs.
 - Go to [Iris](https://iris.to/) or [Snort](https://snort.social/).
 - Logout if you already logged in.
 - Click `Nostr extension login` for Iris or `Login with Extension (NIP-07)` for Snort. It should use `window.nostr.getPublicKey` to get public key.
 - Post some notes. It should use `window.nostr.signEvent` to sign events with private key.
 - Send/receive direct messages. It should use `window.nostr.nip04.encrypt/decrypt` to encrypt/decrypt messages.
-- You can change private key by popup UI of the extension.
 
-![popup](https://user-images.githubusercontent.com/1632335/219871820-efb079ad-1bb0-4157-b327-a963e57ef453.png)
-
-- Press `ADD` button and enter your account name e.g. `bot`, then `ADD` again.
-- You can switch accounts by selecting list items on the popup UI.
+I have tested this extension on Iris and Snort.
 
 ## Potential risks
 
-- This extension passes your private key to [secp256k1.schnorr.sign](https://github.com/paulmillr/noble-secp256k1#schnorrsignmessage-privatekey) and [secp256k1.getSharedSecret](https://github.com/paulmillr/noble-secp256k1#getsharedsecretprivatekeya-publickeyb). The security of this extension depends heavily on these functions.
+- Your private key is stored in Chrome's extension-specific [local storage](https://developer.chrome.com/docs/extensions/reference/storage/#storage-areas) `chrome.storage.local` (on the file system) in encrypted form using an AES key (common key). And the AES key is stored in `chrome.storage.session` (in memory). If someone can see your `chrome.storage.session`, they can decrypt your private key using the AES key.
+- This extension passes your private key to [secp256k1.schnorr.sign](https://github.com/paulmillr/noble-secp256k1#schnorrsignmessage-privatekey) and [secp256k1.getSharedSecret](https://github.com/paulmillr/noble-secp256k1#getsharedsecretprivatekeya-publickeyb). If these functions are not secure, your private key may be exposed.
 - Let me know if you find any other potential risks.
 
 ## TODO
 
 - [x] Prepare a zip file for easy installation.
 - [x] Find a way to store the private key securely.
-- [x] Find a way to store the AES key securely.
-- [x] Find a way to access OS's Keychain app or Chrome's password manager from the Chrome extension, if it's possible.
-- [x] Minimal UI.
-- [x] Add profiles to switch multiple accounts.
-- [ ] Add Windows keychain applications support.
-- [ ] Add YubiKey support.
-- [ ] Better error handling.
+- [ ] Find a way to store the AES key securely.
+- [ ] Error handling.
+- [ ] Minimal UI.
 - [ ] GitHub Actions to build and publish the zip file.
 - [ ] Test `relays`.
+- [ ] Find a way to access OS's Keychain app or Chrome's password manager from the Chrome extension, if it's possible.
+- [ ] Add profiles to switch multiple accounts.
 - [ ] Chrome Web Store?
 
 ## Source code
