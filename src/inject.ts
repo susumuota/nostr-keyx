@@ -2,6 +2,19 @@
 // SPDX-License-Identifier: MIT
 
 (() => {
+
+  // Event object.
+  // https://github.com/nostr-protocol/nips/blob/master/01.md#events-and-signatures
+  type Event = {
+    id?: string,
+    sig?: string,
+    kind: number,
+    tags: string[][],
+    pubkey: string,
+    content: string,
+    created_at: number
+  }
+
   // send the api request to `content.ts`, receive the response, and return it, asynchronously.
   const api = (type: string, arg: any) => {
     return new Promise<any>((resolve, reject) => {
@@ -21,7 +34,7 @@
   // @ts-ignore
   window.nostr = {
     getPublicKey: async (): Promise<string> => api('getPublicKey', {}),
-    signEvent: async (event: any): Promise<any> => api('signEvent', { event }),
+    signEvent: async (event: Event): Promise<Event> => api('signEvent', { event }),
     getRelays: async (): Promise<any> => api('getRelays', {}),
     nip04: {
       encrypt: async (pubkey: string, plaintext: string): Promise<string> => api('nip04.encrypt', { pubkey, plaintext }),
