@@ -4,6 +4,9 @@
 import * as secp from '@noble/secp256k1';
 import { bech32 } from '@scure/base';
 
+// https://github.com/nostr-protocol/nips/blob/master/19.md
+// https://github.com/nbd-wtf/nostr-tools/blob/master/nip19.ts
+
 const BECH32_MAX_SIZE = 5000;
 
 const hexToBech32 = (prefix: string, hexstr: string) => (
@@ -22,7 +25,6 @@ const generateKeys = () => {
   const npub = hexToBech32('npub', publicKey);
   console.assert(bech32ToHex(nsec).data === privateKey);
   console.assert(bech32ToHex(npub).data === publicKey);
-
   return { privateKey, publicKey, nsec, npub };
 };
 
