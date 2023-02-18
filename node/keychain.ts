@@ -138,8 +138,8 @@ const receiveMessage = () => {
   const input = Buffer.concat(chunks);
   const bodyLength = input.readUInt32LE(0); // first 4 bytes are body length
   const body = input.subarray(4, bodyLength + 4);
-  if (body.length !== bodyLength) {
-    log({ 'message': 'if this happen, need to fix while loop', 'body.length': body.length, 'bodyLength': bodyLength });
+  if (body.length !== input.length - 4) {
+    log({ 'message': 'if this happen, need to fix while loop', 'body.length': body.length, 'input.length': input.length });
   }
   return JSON.parse(body.toString());
 }
