@@ -4,13 +4,11 @@ A minimal Chrome extension for [NIP-07](https://github.com/nostr-protocol/nips/b
 
 This extension can protect your private key from being passed to web-based Nostr clients such as [Iris](https://iris.to/) or [Snort](https://snort.social/).
 
-- **[OS native keychain application support (macOS)](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac)**
+- **OS native keychain application** support ([macOS](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac))
 - Minimal dependencies ([`@noble/secp256k1`](https://github.com/paulmillr/noble-secp256k1) and [`@scure/base`](https://github.com/paulmillr/scure-base))
 - Multiple accounts (private keys) support
 
-![keychain](https://user-images.githubusercontent.com/1632335/219872255-2f5fed2d-d791-4091-b2a1-d07aedff916b.png)
-
-![popup](https://user-images.githubusercontent.com/1632335/219871820-efb079ad-1bb0-4157-b327-a963e57ef453.png)
+![keychain](https://user-images.githubusercontent.com/1632335/220174557-ac586a33-d305-4e72-9ca0-a9def568966f.png)
 
 There are already great extensions like [nos2x](https://github.com/fiatjaf/nos2x) or [Alby](https://getalby.com/) for [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md). Unlike these existing extensions, `nostr-keyx` uses **OS native keychain application** (e.g. [Keychain Access](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac) on macOS) to protect your private key. This extension does not store your private key in the local storage of the web browser. Instead, it stores it in the OS native keychain applications. Also, all [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md) functions (`signEvent`, `encrypt`, `decrypt`, etc.) are executed outside the web browser memory space. So it might be less risky than other methods. I hope this extension helps you too.
 
@@ -140,7 +138,7 @@ security delete-generic-password -a default -s nostr-keyx
 - Paste it to `Password` (the third text field).
 - Click `Add`.
 
-![image](https://user-images.githubusercontent.com/1632335/219870202-2a8cbeb7-4acc-40a8-8993-bd0f1be8936d.png)
+![new_password_item](https://user-images.githubusercontent.com/1632335/220175161-a5c0daa7-62bc-45bb-a270-ffa8a78cd80f.png)
 
 - You can create multiple accounts for multiple private keys. But make sure that the service name is `nostr-keyx`.
 - Open Terminal and run `security` command to confirm that the private key can be accessed via `security` command.
@@ -151,7 +149,7 @@ security find-generic-password -a default -s nostr-keyx -w
 
 > **Note**: When you try to access private key, you will be asked to enter your password. You can click `Always Allow` to allow the access without password. When you want to revoke that, you can change the access control of the entry. Right click the entry and select `Get Info`. Then, click `Access Control` tab and click `security` on `Always allow access by these applications:` area then click `-` button to remove it. Now you will be asked to enter your password when you try to access the private key via `security` command.
 
-![image](https://user-images.githubusercontent.com/1632335/219870706-7138cc22-63ff-4191-939c-e17337030abb.png)
+![revoke_application](https://user-images.githubusercontent.com/1632335/220175649-39b206cc-a845-4c48-83ec-367668aacabe.png)
 
 ### Optional: Add web-based Nostr clients
 
@@ -205,7 +203,7 @@ await chrome.storage.session.clear();
 
 ![popup](https://user-images.githubusercontent.com/1632335/219871820-efb079ad-1bb0-4157-b327-a963e57ef453.png)
 
-- Press `ADD` button and enter your account name e.g. `bot`, then `ADD` again.
+- Press `NEW` button and enter your account name e.g. `bot`, then `ADD` again.
 - You can switch accounts by selecting list items on the popup UI.
 
 ## Potential risks
@@ -218,9 +216,10 @@ await chrome.storage.session.clear();
 - [x] Prepare a zip file for easy installation.
 - [x] Find a way to store the private key securely.
 - [x] Find a way to store the AES key securely.
-- [x] Find a way to access OS's Keychain app or Chrome's password manager from the Chrome extension, if it's possible.
+- [x] Find a way to access OS's Keychain app or Chrome's password manager from the Chrome extension.
 - [x] Minimal UI.
 - [x] Add profiles to switch multiple accounts.
+- [ ] Support [NIP-46](https://github.com/nostr-protocol/nips/blob/master/46.md).
 - [ ] Add Windows keychain applications support.
 - [ ] Add YubiKey support.
 - [ ] Better error handling.

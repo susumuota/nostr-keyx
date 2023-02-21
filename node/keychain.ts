@@ -50,9 +50,28 @@ const BECH32_MAX_SIZE = 5000;
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
+const isAlphanumeric = (str: string) => /^[a-zA-Z0-9]+$/.test(str);
+
 const getBech32PrivateKey = (account: string) => {
-  // TODO: needs to sanitize account?
-  return spawnSync('security', ['find-generic-password', '-a', account, '-s', SERVICE_NAME, '-w']).stdout.toString().trim();
+  // TODO: needs to add service name to argument?
+  if (!isAlphanumeric(account)) throw new Error('Account must be alphanumeric.');
+  if (process.platform === 'darwin') {
+    // see `man 1 security`
+    return spawnSync('security', ['find-generic-password', '-a', account, '-s', SERVICE_NAME, '-w']).stdout.toString().trim();
+  } else if (process.platform === 'linux') {
+    // TODO: test this on Linux.
+    // https://www.passwordstore.org/
+    // return spawnSync('pass', ['show', `${SERVICE_NAME}/${account}`]).stdout.toString().trim();
+    throw new Error('Unsupported platform. See getBech32PrivateKey in keychain.ts.');
+  } else if (process.platform === 'win32') {
+    // TODO: don't know whether this works yet.
+    // https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.security/get-credential?source=recommendations
+    // https://learn.microsoft.com/en-us/dotnet/api/system.management.automation.pscredential.getnetworkcredential
+    // return spawnSync('powershell', ['Get-Credential', `${SERVICE_NAME}/${account}`, ...]).stdout.toString().trim();
+    throw new Error('Unsupported platform. See getBech32PrivateKey in keychain.ts.');
+  } else {
+    throw new Error('Unsupported platform. See getBech32PrivateKey in keychain.ts.');
+  }
 };
 
 const getPrivateKey = (account: string) => {
@@ -61,16 +80,16 @@ const getPrivateKey = (account: string) => {
   let bech32PrivateKey: string;
   try {
     bech32PrivateKey = getBech32PrivateKey(account);
-  } catch (err) {
+  } catch (err: any) {
     throw new Error('Failed to access keychain.');
   }
   if (!bech32PrivateKey) throw new Error('Private key was not found.');
   if (bech32PrivateKey.length !== 63) throw new Error('Invalid private key length. It should be 63 characters.');
   try {
-    let { words } = bech32.decode(bech32PrivateKey, BECH32_MAX_SIZE);
+    const { words } = bech32.decode(bech32PrivateKey, BECH32_MAX_SIZE);
     return secp.utils.bytesToHex(bech32.fromWords(words));
-  } catch (err) {
-    throw new Error('Failed to beck32 decode private key.');
+  } catch (err: any) {
+    throw new Error('Failed to bech32 decode private key.');
   }
 };
 
@@ -83,7 +102,7 @@ const getPublicKey = (account: string) => {
     const publicKey = secp.utils.bytesToHex(secp.schnorr.getPublicKey(privateKey));
     publicKeyCache.set(account, publicKey);
     return publicKey;
-  } catch (err) {
+  } catch (err: any) {
     throw new Error('Failed to calculate public key.');
   }
 };
@@ -159,7 +178,6 @@ const handleMessage = async (request: any) => {
   const responseType = [...type].reverse().join(''); // see inject.ts
 
   // NIP-07 APIs
-  // TODO: try to avoid showing the private key in error message.
   try {
     if (type === 'getPublicKey') {
       sendMessage({ id, type: responseType, result: getPublicKey(account) });
@@ -189,10 +207,10 @@ const handleMessage = async (request: any) => {
       // log({ error: 'unknown type', request });
       sendMessage({ id, type: 'error', result: 'unknown type' });
     }
-  } catch (err) {
+  } catch (err: any) {
     // log({ error: err.toString(), request });
-    // TODO: check if err.toString() contains private key or not
-    sendMessage({ id, type: 'error', result: 'error in keychain.ts. intentionally not showing the error message to protect private key.' });
+    // only first 10 chars to avoid leaking private key
+    sendMessage({ id, type: 'error', result: err.toString().slice(0, 10) });
   }
 };
 
@@ -208,6 +226,6 @@ process.stdin.on('readable', async () => {
 // error handler
 process.on('uncaughtException', (err) => {
   // log({ error: err.toString() });
-  // TODO: check if err.toString() contains private key or not
-  sendMessage({ id: '', type: 'error', result: 'uncaughtException. intentionally not showing the error message to protect private key.' });
+  // only first 10 chars to avoid leaking private key
+  sendMessage({ id: '', type: 'error', result: err.toString().slice(0, 10) });
 });
