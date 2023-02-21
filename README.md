@@ -219,6 +219,7 @@ await chrome.storage.session.clear();
 - [x] Find a way to access OS's Keychain app or Chrome's password manager from the Chrome extension.
 - [x] Minimal UI.
 - [x] Add profiles to switch multiple accounts.
+- [ ] Support [NIP-46](https://github.com/nostr-protocol/nips/blob/master/46.md).
 - [ ] Add Windows keychain applications support.
 - [ ] Add YubiKey support.
 - [ ] Better error handling.
