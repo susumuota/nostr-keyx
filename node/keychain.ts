@@ -61,7 +61,7 @@ const getBech32PrivateKey = (account: string) => {
   } else if (process.platform === 'linux') {
     // TODO: test this on Linux.
     // https://www.passwordstore.org/
-    // return spawnSync('pass', ['show', `${SERVICE_NAME}/${account}`]).stdout.toString().trim();
+    return spawnSync('pass', [`${SERVICE_NAME}/${account}`]).stdout.toString().trim();
     throw new Error('Unsupported platform. See getBech32PrivateKey in keychain.ts.');
   } else if (process.platform === 'win32') {
     // TODO: don't know whether this works yet.
@@ -173,16 +173,15 @@ const sendMessage = (message: any) => {
 
 // message handler
 const handleMessage = async (request: any) => {
-  const { id, type, arg, account } = request;
+  const { id, method, params, account } = request;
   // log({ request });
-  const responseType = [...type].reverse().join(''); // see inject.ts
 
   // NIP-07 APIs
   try {
-    if (type === 'getPublicKey') {
-      sendMessage({ id, type: responseType, result: getPublicKey(account) });
-    } else if (type === 'signEvent') {
-      const { event }: { event: Event } = arg;
+    if (method === 'getPublicKey') {
+      sendMessage({ id, result: getPublicKey(account), error: null });
+    } else if (method === 'signEvent') {
+      const { event }: { event: Event } = params;
       // not necessary to fix pubkey and id here but it is for nos2x compatibility
       event.pubkey = event.pubkey ?? getPublicKey(account); // nos2x compatibility
       if (!event.id) {
@@ -191,26 +190,26 @@ const handleMessage = async (request: any) => {
       }
       event.sig = secp.utils.bytesToHex(await secp.schnorr.sign(event.id, getPrivateKey(account)));
       // console.assert(await secp.schnorr.verify(event.sig, event.id, event.pubkey));
-      sendMessage({ id, type: responseType, result: event });
-    } else if (type === 'getRelays') {
-      sendMessage({ id, type: responseType, result: {} }) // TODO: implement relays
-    } else if (type === 'nip04.encrypt') {
-      const { pubkey, plaintext }: { pubkey: string, plaintext: string } = arg;
+      sendMessage({ id, result: event, error: null });
+    } else if (method === 'getRelays') {
+      sendMessage({ id, result: {}, error: null }) // TODO: implement relays
+    } else if (method === 'nip04.encrypt') {
+      const { pubkey, plaintext }: { pubkey: string, plaintext: string } = params;
       const ciphertext = await nip04encrypt(getPrivateKey(account), pubkey, plaintext);
       console.assert(plaintext === await nip04decrypt(getPrivateKey(account), pubkey, ciphertext));
-      sendMessage({ id, type: responseType, result: ciphertext });
-    } else if (type === 'nip04.decrypt') {
-      const { pubkey, ciphertext }: { pubkey: string, ciphertext: string } = arg;
+      sendMessage({ id, result: ciphertext, error: null });
+    } else if (method === 'nip04.decrypt') {
+      const { pubkey, ciphertext }: { pubkey: string, ciphertext: string } = params;
       const plaintext = await nip04decrypt(getPrivateKey(account), pubkey, ciphertext);
-      sendMessage({ id, type: responseType, result: plaintext });
+      sendMessage({ id, result: plaintext, error: null });
     } else {
-      // log({ error: 'unknown type', request });
-      sendMessage({ id, type: 'error', result: 'unknown type' });
+      // log({ error: 'unknown method', request });
+      sendMessage({ id, result: null, error: 'unknown method' });
     }
   } catch (err: any) {
     // log({ error: err.toString(), request });
     // only first 10 chars to avoid leaking private key
-    sendMessage({ id, type: 'error', result: err.toString().slice(0, 10) });
+    sendMessage({ id, result: null, error: err.toString().slice(0, 10) });
   }
 };
 
@@ -227,5 +226,5 @@ process.stdin.on('readable', async () => {
 process.on('uncaughtException', (err) => {
   // log({ error: err.toString() });
   // only first 10 chars to avoid leaking private key
-  sendMessage({ id: '', type: 'error', result: err.toString().slice(0, 10) });
+  sendMessage({ id: crypto.randomUUID(), result: null, error: err.toString().slice(0, 10) });
 });

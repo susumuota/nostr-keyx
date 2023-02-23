@@ -4,17 +4,18 @@
 (() => {
 
   // send the api request to `content.ts`, receive the response, and return it, asynchronously.
-  const api = (type: string, arg: any) => {
+  const api = (method: string, params: any) => {
     return new Promise<any>((resolve, reject) => {
       const id = crypto.randomUUID();
       const listener = (ev: MessageEvent) => { // receive response from `content.ts`
-        if (!(ev.origin === window.location.origin && ev.data.id === id && ev.data.type !== type)) return;
+        if (!(ev.origin === window.location.origin &&
+              ev.data && ev.data.id === id &&
+              !('method' in ev.data))) return; // if there is method, it should be request not response
         window.removeEventListener('message', listener);
-        const responseType = [...type].reverse().join(''); // see background.ts
-        (ev.data.type === responseType ? resolve : reject)(ev.data.result); // return response
+        ev.data.error ? reject(ev.data.error) : resolve(ev.data.result); // return response
       };
       window.addEventListener('message', listener);
-      window.postMessage({ id, type, arg }, window.location.origin); // send request to `content.ts`
+      window.postMessage({ id, method, params }, window.location.origin); // send request to `content.ts`
     });
   };
 
