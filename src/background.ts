@@ -17,7 +17,7 @@ const NIP_07_APIS = ['getPublicKey', 'signEvent', 'getRelays', 'nip04.encrypt', 
 let nativePort: chrome.runtime.Port;
 try {
   nativePort = chrome.runtime.connectNative('io.github.susumuota.nostr_keyx');
-} catch (err) {
+} catch (err: any) {
   console.error('background.ts: nativePort error', err);
   throw err;
 }
@@ -35,10 +35,10 @@ nativePort.onDisconnect.addListener(() => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.debug('background.ts: onMessage: request', request);
 
-  // check request type
-  const { id, type }: { id: string, type: string } = request;
-  if (!(id && NIP_07_APIS.includes(type) || type === 'inject')) {
-    sendResponse({ id, type: 'error', result: 'unknown type' });
+  // check request method
+  const { id, method }: { id: string, method: string } = request;
+  if (!(id && NIP_07_APIS.includes(method) || method === 'inject')) {
+    sendResponse({ id, result: null, error: 'unknown method' });
     return true;
   }
 
@@ -46,9 +46,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // TODO: this executeScript will be removed when Chrome 111 is released (it's beta right now).
   // this is `Method 4` of this post but `Method 5` is rather simple and clean (but requires Chrome 111+).
   // https://stackoverflow.com/a/9517879
-  if (type === 'inject') {
+  if (method === 'inject') {
     if (!(sender.tab && sender.tab.id)) {
-      sendResponse({ id, type: 'error', result: 'no tab' });
+      sendResponse({ id, result: null, error: 'no tab' });
       return true;
     }
     const tabId = sender.tab.id;
@@ -57,11 +57,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         const results = await chrome.scripting.executeScript({
           target: { tabId }, world: 'MAIN', files: ['inject.js'] // world: 'MAIN' is important
         });
-        const responseType = [...type].reverse().join(''); // see inject.ts
-        sendResponse({ id, type: responseType, result: results });
-      } catch (err) {
+        sendResponse({ id, result: results, error: null });
+      } catch (err: any) {
         console.error('background.ts: onMessage: injection error', err);
-        sendResponse({ id, type: 'error', result: err });
+        sendResponse({ id, result: null, error: err.toString() });
       }
     })();
     return true;
@@ -83,9 +82,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       // append account to the request
       nativePort.postMessage({...request, account: await getAccount()});
     })();
-  } catch (err) {
+  } catch (err: any) {
     console.error('background.ts: onMessage: nativePort error', err);
-    sendResponse({ id, type: 'error', result: err });
+    sendResponse({ id, result: null, error: err.toString() });
   }
 
   return true;

@@ -14,9 +14,9 @@ There are already great extensions like [nos2x](https://github.com/fiatjaf/nos2x
 
 ## Install
 
-### Note for Windows and Linux (work in progress)
+### Note for Windows (work in progress)
 
-> **Note**: Currently, the latest version only supports macOS. Please use previous version [`v1.0.1`](https://github.com/susumuota/nostr-keyx/tree/v1.0.1) with AES encryption for the private key protection instead.
+> **Note**: Currently, the latest version only supports macOS and Linux. Please use previous version [`v1.0.1`](https://github.com/susumuota/nostr-keyx/tree/v1.0.1) with AES encryption for the private key protection instead.
 
 ### Option 1: Install from zip file
 
@@ -47,11 +47,7 @@ npm run build
 
 - This version of `nostr-keyx` uses [Node.js](https://nodejs.org/) to communicate with OS native keychain applications.
 - Install [Node.js](https://nodejs.org/). e.g. `brew install node` for Homebrew.
-- Memo the path of `node` command. e.g. `/usr/local/bin/node`. Later, you need to change the [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) of `dist/keychain.js` to specify the absolute path of `node` command.
-
-```sh
-which node
-```
+- Run `which node` and copy the path of `node` command. e.g. `/usr/local/bin/node`. Later, you need to change the [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) of `dist/keychain.mjs` to specify the absolute path of `node` command.
 
 ## Settings
 
@@ -59,14 +55,14 @@ which node
 
 - This extension uses [Chrome's Native Messaging](https://developer.chrome.com/docs/apps/nativeMessaging/) to communicate with OS native keychain applications.
 - Here, you need to change 2 lines in `dist/io.github.susumuota.nostr_keyx.json`.
-  - Change `path` to specify the absolute path of `keychain.js`.
+  - Change `path` to specify the absolute path of `keychain.mjs`.
   - Change `allowed_origins` to specify the `id` of the extension. You can find the `id` of the extension in Chrome's extensions setting page `chrome://extensions`.
 
 ```json
 {
   "name": "io.github.susumuota.nostr_keyx",
   "description": "A minimal Chrome extension for NIP-07. This extension can prevent your private key from being passed to web-based Nostr clients.",
-  "path": "/Users/username/Documents/chromeext/nostr-keyx/dist/keychain.js",
+  "path": "/Users/username/Documents/chromeext/nostr-keyx/dist/keychain.mjs",
   "type": "stdio",
   "allowed_origins": [
     "chrome-extension://jhpjgkhjimkbjiigognoefgnclgngklh/"
@@ -74,13 +70,13 @@ which node
 }
 ```
 
-- Copy `dist/io.github.susumuota.nostr_keyx.json` to [`NativeMessagingHosts` directory](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host-location).
+- Copy `dist/io.github.susumuota.nostr_keyx.json` to [NativeMessagingHosts directory](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host-location).
 
 ```sh
 cp -p dist/io.github.susumuota.nostr_keyx.json ~/Library/Application\ Support/Google/Chrome/NativeMessagingHosts
 ```
 
-- Edit shebang of `dist/keychain.js` to specify the absolute path of `node` command. Or edit `src/keychain.ts` and run `npm run build`. [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) means the first line of the script file. e.g. `#!/usr/local/bin/node`.
+- Edit shebang of `dist/keychain.mjs` to specify the absolute path of `node` command. Or edit `src/keychain.ts` and run `npm run build`. [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) means the first line of the script file. e.g. `#!/usr/local/bin/node`.
 
 ```sh
 #!/usr/local/bin/node
@@ -90,7 +86,7 @@ cp -p dist/io.github.susumuota.nostr_keyx.json ~/Library/Application\ Support/Go
 - Test it. Run it with absolute path on Terminal, input some text and enter, then it will show `uncaughtException` error but it's OK. If your shebang is wrong, it will show `no such file or directory` error.
 
 ```sh
-/Users/username/Documents/chromeext/nostr-keyx/dist/keychain.js
+/Users/username/Documents/chromeext/nostr-keyx/dist/keychain.mjs
 
 11111 # input some text and enter
 z{"id":"","type":"error","result":"uncaughtException. ...
@@ -98,7 +94,7 @@ z{"id":"","type":"error","result":"uncaughtException. ...
 
 ### Set your private key
 
-#### Option 1: Using command `security`
+#### macOS: Option 1: Using command `security`
 
 - Here, I show you how to set your private key on Terminal. You can also use GUI [Keychain Access](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac). I will show you later.
 - Copy private key (e.g. `nsec1...`) to clipboard.
@@ -107,9 +103,8 @@ z{"id":"","type":"error","result":"uncaughtException. ...
 
 ```sh
 security add-generic-password -a default -s nostr-keyx -w
-
-password data for new item:     # paste your private key (e.g. nsec1....)
-retype password for new item:   # paste it again
+# paste your private key (e.g. nsec1....)
+# paste it again
 ```
 
 - Confirm that the entry is created. `find-generic-password` sub command will show the password.
@@ -128,7 +123,7 @@ security delete-generic-password -a default -s nostr-keyx
 
 > **Note**: Right now, `security` command can access the private key without password. But you can revoke that by Keychain Access application. See the next section.
 
-#### Option 2: Using GUI [Keychain Access](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac)
+#### macOS: Option 2: Using GUI [Keychain Access](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac)
 
 - Open spotlight search and type `Keychain Access` and open it.
 - `File` menu > `New Password Item...`
@@ -150,6 +145,19 @@ security find-generic-password -a default -s nostr-keyx -w
 > **Note**: When you try to access private key, you will be asked to enter your password. You can click `Always Allow` to allow the access without password. When you want to revoke that, you can change the access control of the entry. Right click the entry and select `Get Info`. Then, click `Access Control` tab and click `security` on `Always allow access by these applications:` area then click `-` button to remove it. Now you will be asked to enter your password when you try to access the private key via `security` command.
 
 ![revoke_application](https://user-images.githubusercontent.com/1632335/220175649-39b206cc-a845-4c48-83ec-367668aacabe.png)
+
+#### Linux: Using command `pass`
+
+- Install `pass` command. e.g. `sudo apt install pass`.
+- Setup `pass` https://www.passwordstore.org/
+- Copy private key (e.g. `nsec1...`) to clipboard.
+- Run `pass` command to create a new entry for your private key. Here, `insert` sub command is used to create a new entry.
+
+```sh
+pass insert nostr-keyx/default
+# paste your private key (e.g. nsec1....)
+# paste it again
+```
 
 ### Optional: Add web-based Nostr clients
 

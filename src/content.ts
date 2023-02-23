@@ -5,7 +5,7 @@
 // TODO: this sendMessage will be removed when Chrome 111 is released (it's beta right now).
 // this is `Method 4` of this post but `Method 5` is rather simple and clean (but requires Chrome 111+).
 // https://stackoverflow.com/a/9517879
-chrome.runtime.sendMessage({ id: 'inject', type: 'inject', arg: {} }, (response) => {
+chrome.runtime.sendMessage({ id: crypto.randomUUID(), method: 'inject', params: {} }, (response) => {
   console.debug('content.ts: inject: response', response);
 });
 
@@ -13,7 +13,9 @@ const NIP_07_APIS = ['getPublicKey', 'signEvent', 'getRelays', 'nip04.encrypt', 
 
 // proxy request from `inject.ts` to `background.ts` and response from `background.ts` to `inject.ts`.
 window.addEventListener('message', async (ev: MessageEvent) => { // receive from `inject.ts`
-  if (!(ev.origin === window.location.origin && NIP_07_APIS.includes(ev.data.type))) return;
+  if (!(ev.origin === window.location.origin &&
+        ev.data && ev.data.id && ev.data.method &&
+        NIP_07_APIS.includes(ev.data.method))) return;
   chrome.runtime.sendMessage(ev.data, (response) => { // send to / receive from `background.ts`
     window.postMessage(response, window.location.origin); // send to `inject.ts`
   });
