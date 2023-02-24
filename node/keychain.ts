@@ -63,9 +63,8 @@ const getBech32PrivateKey = (account: string) => {
     // https://www.passwordstore.org/
     return spawnSync('pass', [`${SERVICE_NAME}/${account}`]).stdout.toString().trim();
   } else if (process.platform === 'win32') {
-    // TODO: don't know whether this works yet.
-    return spawnSync('get_privatekey.ps1', [account, SERVICE_NAME]).stdout.toString().trim();
-    throw new Error('Unsupported platform. See getBech32PrivateKey in keychain.ts.');
+    // TODO: test this on Windows.
+    return spawnSync('powershell', ['.\\get_privatekey.ps1', account, SERVICE_NAME]).stdout.toString().trim();
   } else {
     throw new Error('Unsupported platform. See getBech32PrivateKey in keychain.ts.');
   }
