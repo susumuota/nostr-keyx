@@ -18,9 +18,10 @@ jobs:
         node-version: 18.14.1
     - run: npm ci
     - run: npm run build
+    - run: npm run pack
     - uses: softprops/action-gh-release@v1
       with:
-        files: dist
+        files: ["*.tgz", "*.zip"]
         draft: true
 
 permissions:

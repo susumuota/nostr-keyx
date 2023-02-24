@@ -3,4 +3,5 @@
 dist
 makezip.sh
 node_modules
+*.tgz
 *.zip
