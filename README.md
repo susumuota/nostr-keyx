@@ -1,4 +1,4 @@
-# nostr-keyx: Nostr key management extension
+# nostr-keyx: Nostr Key Management Extension
 
 A [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md) browser extension that uses the OS's native keychain application to protect your private keys.
 
@@ -36,6 +36,15 @@ npm ci
 npm run build
 ```
 
+### Install chrome extension
+
+- Open Chrome's extensions setting page `chrome://extensions`.
+- Turn `Developer mode` on.
+- Click `Load unpacked`.
+- Specify the dist folder `/path/to/dist`.
+- You will see error message but it's OK for now.
+- Copy the `id` of the extension. e.g. `jhpjgkhjimkbjiigognoefgnclgngklh`. We will use it later.
+
 ### Setup Chrome's Native Messaging
 
 - This extension uses [Chrome's Native Messaging](https://developer.chrome.com/docs/apps/nativeMessaging/) to communicate with native Node.js script.
@@ -59,7 +68,7 @@ npm run build
 
 #### For Windows
 
-- Edit `add_nostr_keyx.reg`. Change `C:\\path\\to\\io.github.susumuota.nostr_keyx.json` to specify the absolute path of `io.github.susumuota.nostr_keyx.json`. See [this page](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host-location) for more details.
+- Edit `dist/add_nostr_keyx.reg`. Change `C:\\path\\to\\io.github.susumuota.nostr_keyx.json` to specify the absolute path of `io.github.susumuota.nostr_keyx.json`. See [this page](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host-location) for more details.
 
 ```reg
 Windows Registry Editor Version 5.00
@@ -95,12 +104,14 @@ cp -p dist/io.github.susumuota.nostr_keyx.json ~/Library/Application\ Support/Go
 
 ### Set your private key
 
-#### macOS: Option 1: Using command `security`
+- If you need a private key for test, you can generate it with `npx ts-node-esm bin/genkey.ts`.
+
+#### For macOS: Option 1: Using command `security`
 
 - Here, I show you how to set your private key on Terminal. You can also use GUI [Keychain Access](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac). I will show you later.
 - Copy private key (e.g. `nsec1...`) to clipboard.
 - Open Terminal.
-- Run `security` command to create a new entry for your private key. Here, `-a` is the account name e.g `default`, `-s` is the service name, and `-w` means the password will be asked. `add-generic-password` sub command is used to create a new entry.
+- Run `security add-generic-password` command to create a new entry for your private key. Here, `-a` specifies the account name e.g `default`, `-s` specifies the service name (service **MUST** be `nostr-keyx`), and `-w` means the password will be asked.
 
 ```sh
 security add-generic-password -a default -s nostr-keyx -w
@@ -147,6 +158,26 @@ security find-generic-password -a default -s nostr-keyx -w
 
 ![revoke_application](https://user-images.githubusercontent.com/1632335/220175649-39b206cc-a845-4c48-83ec-367668aacabe.png)
 
+
+#### For Windows: Using command `add_privatekey.ps1`
+
+- You need to allow PowerShell to run local scripts. Open PowerShell as **Administrator** and run the following command. See details [here](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.3#remotesigned)
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
+```
+
+- Copy private key (e.g. `nsec1...`) to clipboard.
+- Run `dist/add_privatekey.ps1` script.
+
+```powershell
+.¥add_privatekey.ps1 "nostr-keyx"
+```
+
+- Dialog will be shown. Type `default` to `Account Name` and paste your private key to `Password` and click `OK`.
+- Type credential manager in the search box on the taskbar and select [Credential Manager](https://support.microsoft.com/en-us/windows/accessing-credential-manager-1b5c916a-6a16-889f-8581-fc16e8165ac0) Control panel.
+- Click `Web Credentials` and you will see the entry for your private key.
+
 #### For Linux: Using command `pass`
 
 - Setup `pass`. See [this page](https://www.passwordstore.org/).
@@ -183,13 +214,6 @@ pass insert nostr-keyx/default
 ```
 
 - Reload the extension. (Or restart Chrome)
-
-### Install chrome extension
-
-- Open Chrome's extensions setting page `chrome://extensions`.
-- Turn `Developer mode` on.
-- Click `Load unpacked`.
-- Specify the dist folder `/path/to/dist`.
 
 ### Test it on Iris or Snort
 
