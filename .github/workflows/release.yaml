@@ -21,8 +21,10 @@ jobs:
     - run: npm run pack
     - uses: softprops/action-gh-release@v1
       with:
-        files: ["*.tgz", "*.zip"]
         draft: true
+        files: |
+          *.tgz
+          *.zip
 
 permissions:
   contents: write
