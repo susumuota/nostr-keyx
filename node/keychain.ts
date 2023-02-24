@@ -50,11 +50,11 @@ const BECH32_MAX_SIZE = 5000;
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
-const isAlphanumeric = (str: string) => /^[a-zA-Z0-9]+$/.test(str);
+const isAlphanumeric = (str: string) => /^[a-zA-Z0-9_\.\-]+$/.test(str);
 
 const getBech32PrivateKey = (account: string) => {
   // TODO: needs to add service name to argument?
-  if (!isAlphanumeric(account)) throw new Error('Account must be alphanumeric.');
+  if (!isAlphanumeric(account)) throw new Error('Account must be alphanumerics, underscores, dots, or hyphens.');
   if (process.platform === 'darwin') {
     // see `man 1 security`
     return spawnSync('security', ['find-generic-password', '-a', account, '-s', SERVICE_NAME, '-w']).stdout.toString().trim();
@@ -62,13 +62,9 @@ const getBech32PrivateKey = (account: string) => {
     // TODO: test this on Linux.
     // https://www.passwordstore.org/
     return spawnSync('pass', [`${SERVICE_NAME}/${account}`]).stdout.toString().trim();
-    throw new Error('Unsupported platform. See getBech32PrivateKey in keychain.ts.');
   } else if (process.platform === 'win32') {
-    // TODO: don't know whether this works yet.
-    // https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.security/get-credential?source=recommendations
-    // https://learn.microsoft.com/en-us/dotnet/api/system.management.automation.pscredential.getnetworkcredential
-    // return spawnSync('powershell', ['Get-Credential', `${SERVICE_NAME}/${account}`, ...]).stdout.toString().trim();
-    throw new Error('Unsupported platform. See getBech32PrivateKey in keychain.ts.');
+    // TODO: test this on Windows.
+    return spawnSync('powershell', ['.\\get_privatekey.ps1', account, SERVICE_NAME]).stdout.toString().trim();
   } else {
     throw new Error('Unsupported platform. See getBech32PrivateKey in keychain.ts.');
   }

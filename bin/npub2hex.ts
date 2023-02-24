@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2023 Susumu OTA <1632335+susumuota@users.noreply.github.com>
 // SPDX-License-Identifier: MIT
 
+// Usage: npx ts-node-esm bin/npub2hex.ts BECH32TEXT
+
 import * as secp from '@noble/secp256k1';
 import { bech32 } from '@scure/base';
 

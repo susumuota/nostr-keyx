@@ -1,10 +1,8 @@
-# nostr-keyx: Nostr key management extension
+# nostr-keyx: Nostr Key Management Extension
 
-A minimal Chrome extension for [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md).
+A [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md) browser extension that uses the OS's native keychain application to protect your private keys.
 
-This extension can protect your private key from being passed to web-based Nostr clients such as [Iris](https://iris.to/) or [Snort](https://snort.social/).
-
-- **OS native keychain application** support ([macOS](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac))
+- **OS native keychain application** support ([macOS](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac), [Windows](https://support.microsoft.com/en-us/windows/accessing-credential-manager-1b5c916a-6a16-889f-8581-fc16e8165ac0), [Linux](https://www.passwordstore.org/))
 - Minimal dependencies ([`@noble/secp256k1`](https://github.com/paulmillr/noble-secp256k1) and [`@scure/base`](https://github.com/paulmillr/scure-base))
 - Multiple accounts (private keys) support
 
@@ -14,20 +12,20 @@ There are already great extensions like [nos2x](https://github.com/fiatjaf/nos2x
 
 ## Install
 
-### Note for Windows (work in progress)
+### Install Node.js
 
-> **Note**: Currently, the latest version only supports macOS and Linux. Please use previous version [`v1.0.1`](https://github.com/susumuota/nostr-keyx/tree/v1.0.1) with AES encryption for the private key protection instead.
+- `nostr-keyx` uses [Node.js](https://nodejs.org/) to provide NIP-07 functions.
+- Install [Node.js](https://nodejs.org/). e.g. `brew install node` for Homebrew on macOS.
+- Run `which node` and copy the absolute path of `node` command. e.g. `/usr/local/bin/node`. Later, you need to change the [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) of `dist/keychain.mjs` to specify the absolute path of `node` command.
 
 ### Option 1: Install from zip file
 
 - Download the latest zip file from [Releases](https://github.com/susumuota/nostr-keyx/releases).
 - Unzip it. `nostr-keyx-{version}.zip` will be extracted to `nostr-keyx-{version}` folder.
-- Open Chrome's extensions setting page `chrome://extensions`.
-- Turn `Developer mode` on.
-- Click `Load unpacked`.
-- Specify the dist folder `/path/to/nostr-keyx-{version}`.
 
 ### Option 2: Build from source
+
+> **Note**: For Windows, install [Git for Windows](https://gitforwindows.org/), start `git-bash`, run `npm config set script-shell /usr/bin/bash`. Otherwise, you will get error at `npm run build`.
 
 ```sh
 # install latest stable version of Node.js
@@ -38,31 +36,29 @@ npm ci
 npm run build
 ```
 
+### Install chrome extension
+
 - Open Chrome's extensions setting page `chrome://extensions`.
 - Turn `Developer mode` on.
 - Click `Load unpacked`.
-- Specify the dist folder `/path/to/nostr-keyx/dist`.
-
-### Install Node.js
-
-- This version of `nostr-keyx` uses [Node.js](https://nodejs.org/) to communicate with OS native keychain applications.
-- Install [Node.js](https://nodejs.org/). e.g. `brew install node` for Homebrew.
-- Run `which node` and copy the path of `node` command. e.g. `/usr/local/bin/node`. Later, you need to change the [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) of `dist/keychain.mjs` to specify the absolute path of `node` command.
-
-## Settings
+- Specify the dist folder `/path/to/dist`.
+- You will see error message but it's OK for now.
+- Copy the `id` of the extension. e.g. `jhpjgkhjimkbjiigognoefgnclgngklh`. We will use it later.
 
 ### Setup Chrome's Native Messaging
 
-- This extension uses [Chrome's Native Messaging](https://developer.chrome.com/docs/apps/nativeMessaging/) to communicate with OS native keychain applications.
+- This extension uses [Chrome's Native Messaging](https://developer.chrome.com/docs/apps/nativeMessaging/) to communicate with native Node.js script.
 - Here, you need to change 2 lines in `dist/io.github.susumuota.nostr_keyx.json`.
-  - Change `path` to specify the absolute path of `keychain.mjs`.
+  - Change `path` to specify the absolute path of `keychain.mjs` (or `keychain.bat` for Windows).
   - Change `allowed_origins` to specify the `id` of the extension. You can find the `id` of the extension in Chrome's extensions setting page `chrome://extensions`.
+  - See [this page](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host) for more details.
+-
 
 ```json
 {
   "name": "io.github.susumuota.nostr_keyx",
-  "description": "A minimal Chrome extension for NIP-07. This extension can prevent your private key from being passed to web-based Nostr clients.",
-  "path": "/Users/username/Documents/chromeext/nostr-keyx/dist/keychain.mjs",
+  "description": "A NIP-07 browser extension that uses the OS's native keychain application to protect your private keys.",
+  "path": "/path/to/dist/keychain.mjs",  // for Windows, change to `keychain.bat`
   "type": "stdio",
   "allowed_origins": [
     "chrome-extension://jhpjgkhjimkbjiigognoefgnclgngklh/"
@@ -70,36 +66,52 @@ npm run build
 }
 ```
 
+#### For Windows
+
+- Edit `dist/add_nostr_keyx.reg`. Change `C:\\path\\to\\io.github.susumuota.nostr_keyx.json` to specify the absolute path of `io.github.susumuota.nostr_keyx.json`. See [this page](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host-location) for more details.
+
+```reg
+Windows Registry Editor Version 5.00
+[HKEY_CURRENT_USER\Software\Google\Chrome\NativeMessagingHosts\io.github.susumuota.nostr_keyx]
+@="C:\\path\\to\\io.github.susumuota.nostr_keyx.json"
+```
+
+- Double click `add_nostr_keyx.reg` on explorer. It will add registry key.
+
+#### For macOS and Linux
+
 - Copy `dist/io.github.susumuota.nostr_keyx.json` to [NativeMessagingHosts directory](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host-location).
 
 ```sh
 cp -p dist/io.github.susumuota.nostr_keyx.json ~/Library/Application\ Support/Google/Chrome/NativeMessagingHosts
 ```
 
-- Edit shebang of `dist/keychain.mjs` to specify the absolute path of `node` command. Or edit `src/keychain.ts` and run `npm run build`. [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) means the first line of the script file. e.g. `#!/usr/local/bin/node`.
+- Edit shebang of `dist/keychain.mjs` to specify the absolute path of `node` command. [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) means the first line of the script file. e.g. `#!/usr/local/bin/node`.
 
 ```sh
 #!/usr/local/bin/node
 ...
 ```
 
-- Test it. Run it with absolute path on Terminal, input some text and enter, then it will show `uncaughtException` error but it's OK. If your shebang is wrong, it will show `no such file or directory` error.
+- Test it. Run it with absolute path on Terminal, input some text and enter, then it will show error but it's OK. If your shebang is wrong, it will show `no such file or directory` error.
 
 ```sh
 /Users/username/Documents/chromeext/nostr-keyx/dist/keychain.mjs
 
 11111 # input some text and enter
-z{"id":"","type":"error","result":"uncaughtException. ...
+({"result":null,"error":"unknown method"}...
 ```
 
 ### Set your private key
 
-#### macOS: Option 1: Using command `security`
+- If you need a private key for test, you can generate it with `npx ts-node-esm bin/genkey.ts`.
+
+#### For macOS: Option 1: Using command `security`
 
 - Here, I show you how to set your private key on Terminal. You can also use GUI [Keychain Access](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac). I will show you later.
 - Copy private key (e.g. `nsec1...`) to clipboard.
 - Open Terminal.
-- Run `security` command to create a new entry for your private key. Here, `-a` is the account name e.g `default`, `-s` is the service name, and `-w` means the password will be asked. `add-generic-password` sub command is used to create a new entry.
+- Run `security add-generic-password` command to create a new entry for your private key. Here, `-a` specifies the account name e.g `default`, `-s` specifies the service name (service **MUST** be `nostr-keyx`), and `-w` means the password will be asked.
 
 ```sh
 security add-generic-password -a default -s nostr-keyx -w
@@ -123,7 +135,7 @@ security delete-generic-password -a default -s nostr-keyx
 
 > **Note**: Right now, `security` command can access the private key without password. But you can revoke that by Keychain Access application. See the next section.
 
-#### macOS: Option 2: Using GUI [Keychain Access](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac)
+#### For macOS: Option 2: Using GUI [Keychain Access](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac)
 
 - Open spotlight search and type `Keychain Access` and open it.
 - `File` menu > `New Password Item...`
@@ -146,12 +158,31 @@ security find-generic-password -a default -s nostr-keyx -w
 
 ![revoke_application](https://user-images.githubusercontent.com/1632335/220175649-39b206cc-a845-4c48-83ec-367668aacabe.png)
 
-#### Linux: Using command `pass`
 
-- Install `pass` command. e.g. `sudo apt install pass`.
-- Setup `pass` https://www.passwordstore.org/
+#### For Windows: Using command `add_privatekey.ps1`
+
+- You need to allow PowerShell to run local scripts. Open PowerShell as **Administrator** and run the following command. See details [here](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.3#remotesigned)
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
+```
+
 - Copy private key (e.g. `nsec1...`) to clipboard.
-- Run `pass` command to create a new entry for your private key. Here, `insert` sub command is used to create a new entry.
+- Run `dist/add_privatekey.ps1` script.
+
+```powershell
+.¥add_privatekey.ps1 "nostr-keyx"
+```
+
+- Dialog will be shown. Type `default` to `Account Name` and paste your private key to `Password` and click `OK`.
+- Type credential manager in the search box on the taskbar and select [Credential Manager](https://support.microsoft.com/en-us/windows/accessing-credential-manager-1b5c916a-6a16-889f-8581-fc16e8165ac0) Control panel.
+- Click `Web Credentials` and you will see the entry for your private key.
+
+#### For Linux: Using command `pass`
+
+- Setup `pass`. See [this page](https://www.passwordstore.org/).
+- Copy private key (e.g. `nsec1...`) to clipboard.
+- Run `pass insert` command to create a new entry for your private key.
 
 ```sh
 pass insert nostr-keyx/default
@@ -161,7 +192,7 @@ pass insert nostr-keyx/default
 
 ### Optional: Add web-based Nostr clients
 
-- If you want to add other web-based Nostr clients, open `public/manifest.json` and add their URLs to `content_scripts.matches` and `host_permissions`.
+- If you want to add other web-based Nostr clients, open `dist/manifest.json` and add their URLs to `content_scripts.matches` and `host_permissions`.
 
 ```json
   "content_scripts": [
@@ -180,12 +211,6 @@ pass insert nostr-keyx/default
     "https://snort.social/*",
     "http://localhost/*"
   ]
-```
-
-- Rebuild the extension.
-
-```sh
-npm run build
 ```
 
 - Reload the extension. (Or restart Chrome)
@@ -227,11 +252,11 @@ await chrome.storage.session.clear();
 - [x] Find a way to access OS's Keychain app or Chrome's password manager from the Chrome extension.
 - [x] Minimal UI.
 - [x] Add profiles to switch multiple accounts.
+- [x] Add Windows keychain applications support.
+- [x] GitHub Actions to build and publish the zip file.
 - [ ] Support [NIP-46](https://github.com/nostr-protocol/nips/blob/master/46.md).
-- [ ] Add Windows keychain applications support.
 - [ ] Add YubiKey support.
 - [ ] Better error handling.
-- [ ] GitHub Actions to build and publish the zip file.
 - [ ] Test `relays`.
 - [ ] Chrome Web Store?
 

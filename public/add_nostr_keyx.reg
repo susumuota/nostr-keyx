@@ -1,0 +1,3 @@
+Windows Registry Editor Version 5.00
+[HKEY_CURRENT_USER\Software\Google\Chrome\NativeMessagingHosts\io.github.susumuota.nostr_keyx]
+@="C:\\path\\to\\io.github.susumuota.nostr_keyx.json"
