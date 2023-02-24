@@ -4,7 +4,7 @@
   "description": "A NIP-07 browser extension that uses the OS's native keychain application to protect your private keys.",
   "private": true,
   "type": "module",
-  "files": ["dist", "bin"],
+  "files": ["dist"],
   "scripts": {
     "build-js": "esbuild --bundle --minify --format=esm --outdir=dist src/*",
     "build-node": "esbuild --bundle --minify --format=esm --platform=node --outdir=dist --out-extension:.js=.mjs node/*.ts",
