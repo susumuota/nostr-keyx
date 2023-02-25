@@ -15,8 +15,8 @@ There are already great extensions like [nos2x](https://github.com/fiatjaf/nos2x
 ### Install Node.js
 
 - `nostr-keyx` uses [Node.js](https://nodejs.org/) to provide NIP-07 functions.
-- Install [Node.js](https://nodejs.org/). e.g. `brew install node` for Homebrew on macOS.
-- Run `which node` and copy the absolute path of `node` command. e.g. `/usr/local/bin/node`. Later, you need to change the [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) of `dist/keychain.mjs` to specify the absolute path of `node` command.
+- Install [Node.js](https://nodejs.org/). e.g. `brew install node` for on macOS with Homebrew.
+- Open Terminal and run `which node` and copy the absolute path of `node` command. e.g. `/usr/local/bin/node`. We will use it later.
 
 ### Option 1: Install from zip file
 
@@ -25,7 +25,7 @@ There are already great extensions like [nos2x](https://github.com/fiatjaf/nos2x
 
 ### Option 2: Build from source
 
-> **Note**: For Windows, install [Git for Windows](https://gitforwindows.org/), start `git-bash`, run `npm config set script-shell /usr/bin/bash`. Otherwise, you will get error at `npm run build`.
+> **Note**: For Windows, install [Git for Windows](https://gitforwindows.org/), start `git-bash` and run `npm config set script-shell /usr/bin/bash`. Otherwise, you will get error at `npm run build`.
 
 ```sh
 # install latest stable version of Node.js
@@ -36,29 +36,31 @@ npm ci
 npm run build
 ```
 
-### Install chrome extension
+### Install Chrome extension
 
 - Open Chrome's extensions setting page `chrome://extensions`.
 - Turn `Developer mode` on.
 - Click `Load unpacked`.
-- Specify the dist folder `/path/to/dist`.
-- You will see error message but it's OK for now.
+- Specify the extension folder `/path/to/dist/extension`.
+- You will see error messages but it's OK for now.
 - Copy the `id` of the extension. e.g. `jhpjgkhjimkbjiigognoefgnclgngklh`. We will use it later.
 
 ### Setup Chrome's Native Messaging
 
 - This extension uses [Chrome's Native Messaging](https://developer.chrome.com/docs/apps/nativeMessaging/) to communicate with native Node.js script.
-- Here, you need to change 2 lines in `dist/io.github.susumuota.nostr_keyx.json`.
-  - Change `path` to specify the absolute path of `keychain.mjs` (or `keychain.bat` for Windows).
+
+#### For macOS and Linux
+
+- You need to edit 2 lines in `dist/unix/io.github.susumuota.nostr_keyx.json`.
+  - Change `path` to specify the absolute path of `keychain.mjs`.
   - Change `allowed_origins` to specify the `id` of the extension. You can find the `id` of the extension in Chrome's extensions setting page `chrome://extensions`.
   - See [this page](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host) for more details.
--
 
 ```json
 {
   "name": "io.github.susumuota.nostr_keyx",
   "description": "A NIP-07 browser extension that uses the OS's native keychain application to protect your private keys.",
-  "path": "/path/to/dist/keychain.mjs",  // for Windows, change to `keychain.bat`
+  "path": "/path/to/dist/unix/keychain.mjs",
   "type": "stdio",
   "allowed_origins": [
     "chrome-extension://jhpjgkhjimkbjiigognoefgnclgngklh/"
@@ -66,45 +68,60 @@ npm run build
 }
 ```
 
-#### For Windows
-
-- Edit `dist/add_nostr_keyx.reg`. Change `C:\\path\\to\\io.github.susumuota.nostr_keyx.json` to specify the absolute path of `io.github.susumuota.nostr_keyx.json`. See [this page](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host-location) for more details.
-
-```reg
-Windows Registry Editor Version 5.00
-[HKEY_CURRENT_USER\Software\Google\Chrome\NativeMessagingHosts\io.github.susumuota.nostr_keyx]
-@="C:\\path\\to\\io.github.susumuota.nostr_keyx.json"
-```
-
-- Double click `add_nostr_keyx.reg` on explorer. It will add registry key.
-
-#### For macOS and Linux
-
-- Copy `dist/io.github.susumuota.nostr_keyx.json` to [NativeMessagingHosts directory](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host-location).
+- Copy `dist/unix/io.github.susumuota.nostr_keyx.json` to [NativeMessagingHosts directory](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host-location).
 
 ```sh
-cp -p dist/io.github.susumuota.nostr_keyx.json ~/Library/Application\ Support/Google/Chrome/NativeMessagingHosts
+cp -p dist/unix/io.github.susumuota.nostr_keyx.json ~/Library/Application\ Support/Google/Chrome/NativeMessagingHosts
 ```
 
-- Edit shebang of `dist/keychain.mjs` to specify the absolute path of `node` command. [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) means the first line of the script file. e.g. `#!/usr/local/bin/node`.
+- Edit shebang of `dist/unix/keychain.mjs` to specify the absolute path of `node` command. [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) means the first line of the script file. e.g. `#!/usr/local/bin/node`.
 
 ```sh
 #!/usr/local/bin/node
 ...
 ```
 
-- Test it. Run it with absolute path on Terminal, input some text and enter, then it will show error but it's OK. If your shebang is wrong, it will show `no such file or directory` error.
+- Open Terminal, run it with absolute path, input some text and enter, then it will show error but it's OK. If your shebang is wrong, it will show `no such file or directory` error.
 
 ```sh
-/Users/username/Documents/chromeext/nostr-keyx/dist/keychain.mjs
-
-11111 # input some text and enter
-({"result":null,"error":"unknown method"}...
+/path/to/dist/unix/keychain.mjs
+# 11111 # input some text and enter
+# ({"result":null,"error":"unknown method"}...
 ```
+
+#### For Windows
+
+- You need to edit 2 lines in `dist/windows/io.github.susumuota.nostr_keyx.json`.
+  - Change `path` to specify the absolute path of `keychain.bat`.
+  - Change `allowed_origins` to specify the `id` of the extension. You can find the `id` of the extension in Chrome's extensions setting page `chrome://extensions`.
+  - See [this page](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host) for more details.
+
+```json
+{
+  "name": "io.github.susumuota.nostr_keyx",
+  "description": "A NIP-07 browser extension that uses the OS's native keychain application to protect your private keys.",
+  "path": "C:\\path\\to\\dist\\windows\\keychain.bat",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://jhpjgkhjimkbjiigognoefgnclgngklh/"
+  ]
+}
+```
+
+- Edit `dist/windows/add_nostr_keyx.reg`.
+  - Change `@="..."` to specify the absolute path of `dist/windows/io.github.susumuota.nostr_keyx.json`. See [this page](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host-location) for more details.
+
+```reg
+Windows Registry Editor Version 5.00
+[HKEY_CURRENT_USER\Software\Google\Chrome\NativeMessagingHosts\io.github.susumuota.nostr_keyx]
+@="C:\\path\\to\\dist\\windows\\io.github.susumuota.nostr_keyx.json"
+```
+
+- Double click `add_nostr_keyx.reg` on Explorer. It will add registry key. You can check it on Registry Editor by searching `nostr_keyx`. If you want to uninstall this extension, delete the registry key too.
 
 ### Set your private key
 
-- If you need a private key for test, you can generate it with `npx ts-node-esm bin/genkey.ts`.
+> **Note**: If you need a private key for test, you can generate it with `npx ts-node-esm bin/genkey.ts`.
 
 #### For macOS: Option 1: Using command `security`
 
@@ -161,22 +178,36 @@ security find-generic-password -a default -s nostr-keyx -w
 
 #### For Windows: Using command `add_privatekey.ps1`
 
-- You need to allow PowerShell to run local scripts. Open PowerShell as **Administrator** and run the following command. See details [here](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.3#remotesigned)
+- You need to allow PowerShell to run local scripts. Open PowerShell as **Administrator** and run the following command to allow executing script. See details [here](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.3#remotesigned).
 
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 ```
 
-- Copy private key (e.g. `nsec1...`) to clipboard.
-- Run `dist/add_privatekey.ps1` script.
+- Exit PowerShell as **Administrator**. Then, open PowerShell as a normal user.
+- Run `Unblock-File` to unblock PowerShell script files that were downloaded from the internet so you can run them. See details [here](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/unblock-file?view=powershell-7.3).
 
 ```powershell
-.¥add_privatekey.ps1 "nostr-keyx"
+cd C:\path\to\dist\windows
+Unblock-File .\add_privatekey.ps1
+Unblock-File .\get_privatekey.ps1
+```
+
+- Copy private key (e.g. `nsec1...`) to clipboard.
+- Run `add_privatekey.ps1` script to create a new entry for your private key. Here, `nostr-keyx` is the service name. It **MUST** be `nostr-keyx`.
+
+```powershell
+.\add_privatekey.ps1 "nostr-keyx"
 ```
 
 - Dialog will be shown. Type `default` to `Account Name` and paste your private key to `Password` and click `OK`.
-- Type credential manager in the search box on the taskbar and select [Credential Manager](https://support.microsoft.com/en-us/windows/accessing-credential-manager-1b5c916a-6a16-889f-8581-fc16e8165ac0) Control panel.
+
+![get_credential](https://user-images.githubusercontent.com/1632335/221339350-122fa0c2-e0a4-4843-bdd4-8fef58aec3a8.png)
+
+- Type `credential manager` in the search box on the taskbar and select [Credential Manager](https://support.microsoft.com/en-us/windows/accessing-credential-manager-1b5c916a-6a16-889f-8581-fc16e8165ac0) Control panel.
 - Click `Web Credentials` and you will see the entry for your private key.
+
+![credential_manager](https://user-images.githubusercontent.com/1632335/221339296-9fa1eddb-bcff-47c1-859f-0ac717f2bf81.png)
 
 #### For Linux: Using command `pass`
 
@@ -213,12 +244,13 @@ pass insert nostr-keyx/default
   ]
 ```
 
-- Reload the extension. (Or restart Chrome)
-
 ### Test it on Iris or Snort
 
-- First, disable similar NIP-07 extensions, e.g. nos2x, Alby, etc. On Alby, you only need to disable `NIP-07` section on the settings.
-- Go to extension page and click `Service Worker` to open dev console of the extension.
+- Open Chrome and go to `chrome://extensions/`.
+- Clear errors of the extension.
+- Reload the extension.
+- Disable similar NIP-07 extensions, e.g. nos2x, Alby, etc. On Alby, you only need to disable `NIP-07` section on the settings.
+- Click `Service Worker` to open dev console of the extension.
 - If you have used previous versions of this extension, you should clear the extension's cache. Type the following commands in the extension's dev console.
 
 ```javascript
