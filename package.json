@@ -14,7 +14,9 @@
     "watch-js": "esbuild --watch --bundle --sourcemap=inline --format=esm --outdir=dist/extension src/*",
     "watch-node": "esbuild --watch --bundle --sourcemap=inline --format=esm --platform=node --outdir=dist/unix --out-extension:.js=.mjs node/*.ts",
     "watch": "concurrently \"npm:watch-*\"",
-    "pack": "rm -f *.tgz *.zip ; npm pack ; tar tfz *.tgz | sed -e 's|^package/||' | zip -r@ `ls *.tgz | sed -e 's|\\.tgz|\\.zip|'`"
+    "pack": "rm -f *.tgz *.zip ; npm pack ; tar tfz *.tgz | sed -e 's|^package/||' | zip -r@ `ls *.tgz | sed -e 's|\\.tgz|\\.zip|'`",
+    "genkey": "tsx bin/genkey.ts",
+    "npub2hex": "tsx bin/npub2hex.ts"
   },
   "repository": {
     "type": "git",
@@ -42,6 +44,7 @@
     "concurrently": "^7.6.0",
     "esbuild": "^0.17.10",
     "ts-node": "^10.9.1",
+    "tsx": "^3.12.3",
     "typescript": "^4.9.5"
   },
   "dependencies": {

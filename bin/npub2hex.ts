@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Susumu OTA <1632335+susumuota@users.noreply.github.com>
 // SPDX-License-Identifier: MIT
 
-// Usage: npx ts-node-esm bin/npub2hex.ts BECH32TEXT
+// Usage: npx tsx bin/genkey.ts
 
 import * as secp from '@noble/secp256k1';
 import { bech32 } from '@scure/base';
@@ -23,5 +23,5 @@ const bech32ToHex = (bech32str: string) => {
 if (process.argv[2]) {
   console.log(bech32ToHex(process.argv[2] as string));
 } else {
-  console.log('Usage: npx ts-node-esm bin/npub2hex.ts BECH32TEXT');
+  console.log('Usage: npx tsx bin/genkey.ts BECH32TEXT');
 }
