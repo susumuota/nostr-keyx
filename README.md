@@ -1,6 +1,13 @@
 # nostr-keyx: Nostr Key Management Extension
 
-Language: EN | [JA](https://github-com.translate.goog/susumuota/nostr-keyx/blob/main/README.md?_x_tr_sl=en&_x_tr_tl=ja&_x_tr_hl=ja&_x_tr_pto=wapp) | [ES](https://github-com.translate.goog/susumuota/nostr-keyx/blob/main/README.md?_x_tr_sl=en&_x_tr_tl=es&_x_tr_hl=es&_x_tr_pto=wapp) | [ZH](https://github-com.translate.goog/susumuota/nostr-keyx/blob/main/README.md?_x_tr_sl=en&_x_tr_tl=zh-CN&_x_tr_hl=zh-CN&_x_tr_pto=wapp)
+[![GitHub release](https://img.shields.io/github/v/release/susumuota/nostr-keyx)](https://github.com/susumuota/nostr-keyx/releases)
+[![GitHub License](https://img.shields.io/github/license/susumuota/nostr-keyx)](https://github.com/susumuota/nostr-keyx/blob/main/LICENSE)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/susumuota/nostr-keyx/build.yaml)](https://github.com/susumuota/nostr-keyx/actions/workflows/build.yaml)
+[![GitHub last commit](https://img.shields.io/github/last-commit/susumuota/nostr-keyx)](https://github.com/susumuota/nostr-keyx/commits)
+EN |
+[JA](https://github-com.translate.goog/susumuota/nostr-keyx/blob/main/README.md?_x_tr_sl=en&_x_tr_tl=ja&_x_tr_hl=ja&_x_tr_pto=wapp) |
+[ES](https://github-com.translate.goog/susumuota/nostr-keyx/blob/main/README.md?_x_tr_sl=en&_x_tr_tl=es&_x_tr_hl=es&_x_tr_pto=wapp) |
+[ZH](https://github-com.translate.goog/susumuota/nostr-keyx/blob/main/README.md?_x_tr_sl=en&_x_tr_tl=zh-CN&_x_tr_hl=zh-CN&_x_tr_pto=wapp)
 
 A [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md) browser extension that uses the OS's native keychain application to protect your private keys.
 
