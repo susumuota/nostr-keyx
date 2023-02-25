@@ -108,7 +108,7 @@ cp -p dist/unix/io.github.susumuota.nostr_keyx.json ~/Library/Application\ Suppo
 }
 ```
 
-- Edit `dist/windows/add_nostr_keyx.reg`.
+- Edit `dist/windows/register_nostr_keyx.reg`.
   - Change `@="..."` to specify the absolute path of `dist/windows/io.github.susumuota.nostr_keyx.json`. See [this page](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host-location) for more details.
 
 ```reg
@@ -117,7 +117,7 @@ Windows Registry Editor Version 5.00
 @="C:\\path\\to\\dist\\windows\\io.github.susumuota.nostr_keyx.json"
 ```
 
-- Double click `add_nostr_keyx.reg` on Explorer. It will add registry key. You can check it on Registry Editor by searching `nostr_keyx`. If you want to uninstall this extension, delete the registry key too.
+- Double click `register_nostr_keyx.reg` on Explorer. It will add registry key. You can check it on Registry Editor by searching `nostr_keyx`. If you want to uninstall this extension, delete the registry key too.
 
 ### Set your private key
 
