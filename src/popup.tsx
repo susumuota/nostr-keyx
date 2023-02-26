@@ -98,7 +98,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <AppBar position="sticky">
+      <AppBar position="sticky" style={{ background: 'linear-gradient(to right bottom, rgba(0, 0, 76, 1.0), rgba(21, 183, 185, 1.0)' }}>
         <Toolbar>
           <Typography variant="h4" sx={typographySx}>Nostr-KeyX</Typography>
         </Toolbar>
