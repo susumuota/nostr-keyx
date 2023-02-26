@@ -5,7 +5,7 @@ param([Parameter(Mandatory)][ValidatePattern("^[a-zA-Z0-9_\.\-]+$")][string] $se
 
 [void][Windows.Security.Credentials.PasswordVault,Windows.Security.Credentials,ContentType=WindowsRuntime]
 
-$cred = Get-Credential -Message "Input username (e.g. default) at user name field. And input private key (nsec1...) at password field."
+$cred = Get-Credential -Message "Input account name (e.g. default) at User name field. And input private key (nsec1...) at password field."
 $pcred = New-Object Windows.Security.Credentials.PasswordCredential -ArgumentList ($service, $cred.UserName, $cred.GetNetworkCredential().Password)
 $vault = New-Object Windows.Security.Credentials.PasswordVault
 $vault.Add($pcred)

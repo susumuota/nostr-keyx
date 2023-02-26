@@ -82,7 +82,7 @@ function App() {
     palette: {
       mode: 'light',
       primary: {
-        main: 'rgba(21, 183, 185, 1.0)',
+        main: 'rgba(0, 0, 76, 1.0)',
         contrastText: 'rgba(255, 255, 255, 1.0)',
       },
     },
