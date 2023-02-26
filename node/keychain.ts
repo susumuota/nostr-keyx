@@ -192,7 +192,7 @@ const handleMessage = async (request: any) => {
     } else if (method === 'nip04.encrypt') {
       const { pubkey, plaintext }: { pubkey: string, plaintext: string } = params;
       const ciphertext = await nip04encrypt(getPrivateKey(account), pubkey, plaintext);
-      console.assert(plaintext === await nip04decrypt(getPrivateKey(account), pubkey, ciphertext));
+      // console.assert(plaintext === await nip04decrypt(getPrivateKey(account), pubkey, ciphertext));
       sendMessage({ id, result: ciphertext, error: null });
     } else if (method === 'nip04.decrypt') {
       const { pubkey, ciphertext }: { pubkey: string, ciphertext: string } = params;
