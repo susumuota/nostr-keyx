@@ -4,6 +4,6 @@
   "path": "keychain.bat",
   "type": "stdio",
   "allowed_origins": [
-    "chrome-extension://(WRITE EXTENSION ID HERE WITHOUT BRACKETS)/"
+    "chrome-extension://__EXTENSION_ID__/"
   ]
 }
