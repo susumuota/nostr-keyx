@@ -16,7 +16,7 @@ A [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md) browser ext
 - Minimal dependencies ([`@noble/secp256k1`](https://github.com/paulmillr/noble-secp256k1) and [`@scure/base`](https://github.com/paulmillr/scure-base))
 - Multiple accounts (private keys) support
 
-![keychain](https://user-images.githubusercontent.com/1632335/220174557-ac586a33-d305-4e72-9ca0-a9def568966f.png)
+![keychain](https://user-images.githubusercontent.com/1632335/221407817-bc4ecd58-da53-4b39-8ec0-59270eee6af9.png)
 
 There are already great extensions like [nos2x](https://github.com/fiatjaf/nos2x) or [Alby](https://getalby.com/) for [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md). Unlike these existing extensions, `nostr-keyx` uses the **OS's native keychain application** (e.g. [Keychain Access](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac) on MacOS) to store your private key instead of the web browser's local storage. In addition, all of the [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md) functions (`signEvent`, `encrypt`, `decrypt`, etc.) are executed outside of the web browser's memory. So it might be less risky than other extensions. I hope this extension helps you too.
 
