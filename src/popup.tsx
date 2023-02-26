@@ -82,7 +82,7 @@ function App() {
     palette: {
       mode: 'light',
       primary: {
-        main: 'rgba(0, 0, 76, 1.0)',
+        main: 'rgba(25, 25, 112, 1.0)',
         contrastText: 'rgba(255, 255, 255, 1.0)',
       },
     },
@@ -98,7 +98,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <AppBar position="sticky" style={{ background: 'linear-gradient(to right bottom, rgba(0, 0, 76, 1.0), rgba(21, 183, 185, 1.0)' }}>
+      <AppBar position="sticky" style={{ background: 'linear-gradient(to right bottom, rgba(25, 25, 112, 1.0), rgba(21, 183, 185, 1.0)' }}>
         <Toolbar>
           <Typography variant="h4" sx={typographySx}>Nostr-KeyX</Typography>
         </Toolbar>
