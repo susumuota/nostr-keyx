@@ -177,12 +177,12 @@ const handleMessage = async (request: any) => {
     if (method === 'getPublicKey') {
       sendMessage({ id, result: getPublicKey(account), error: null });
     } else if (method === 'signEvent') {
+      // takes an event object, adds `id`, `pubkey` and `sig` and returns it
       const { event }: { event: Event } = params;
-      // not necessary to fix pubkey and id here but it is for nos2x compatibility
-      event.pubkey = event.pubkey ?? getPublicKey(account); // nos2x compatibility
+      event.pubkey = event.pubkey ?? getPublicKey(account);
       if (!event.id) {
         const json = JSON.stringify([0, event.pubkey, event.created_at, event.kind, event.tags, event.content]);
-        event.id = secp.utils.bytesToHex(await secp.utils.sha256(encoder.encode(json))); // nos2x compatibility
+        event.id = secp.utils.bytesToHex(await secp.utils.sha256(encoder.encode(json)));
       }
       event.sig = secp.utils.bytesToHex(await secp.schnorr.sign(event.id, getPrivateKey(account)));
       // console.assert(await secp.schnorr.verify(event.sig, event.id, event.pubkey));
