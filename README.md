@@ -280,7 +280,7 @@ await chrome.storage.session.clear();
 
 - You can change account (private key) by popup UI of the extension.
 
-![popup](https://user-images.githubusercontent.com/1632335/221397756-d8f94c61-bd7a-4d56-92be-5d91beaeae74.png)
+![popup](https://user-images.githubusercontent.com/1632335/221405778-4b3f9849-3a3a-4e06-8c15-70f2ee071663.png)
 
 - You can add an account. This account name must match the account name in the OS Keychain application. e.g. `default`, `bot`, `test`, etc.
 - Press `NEW` button and enter your account name, then press `ADD`.
