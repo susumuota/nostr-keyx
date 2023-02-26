@@ -5,4 +5,5 @@ $path = "HKCU:\Software\Google\Chrome\NativeMessagingHosts\io.github.susumuota.n
 
 Remove-Item -Path $path -Force
 
-"Done!"
+Write-Output "Done!"
+Pause

@@ -10,5 +10,5 @@ $stab = $json + ".stab"
 Get-Content $stab | ForEach-Object { $_ -creplace "__EXTENSION_ID__", $extension_id } | Out-File $json -Encoding ascii
 New-Item -Path $path -Value (Convert-Path $json) -Force
 
-"Done!"
+Write-Output "Done!"
 Pause
