@@ -9,8 +9,8 @@ import { useStorage } from './useStorage';
 
 // TODO: refine
 function App() {
-  const [account, setAccount] = useStorage('account', 'default'); // will be stored in chrome.storage.local
-  const [accountList, setAccountList] = useStorage('accountList', ['default']); // will be stored in chrome.storage.local
+  const [account, setAccount] = useStorage('account', 'default'); // will be stored in chrome.storage.sync
+  const [accountList, setAccountList] = useStorage('accountList', ['default']); // will be stored in chrome.storage.sync
   const [targetAccount, setTargetAccount] = useState('');
   const [message, setMessage] = useState('');
   const [isSnackbar, setSnackbar] = useState(false);

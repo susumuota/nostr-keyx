@@ -8,7 +8,7 @@ const useStorage = <T,>(key: string, initialState: T | (() => T)): [T, React.Dis
 
   useEffect(() => {
     (async () => {
-      const s = (await chrome.storage.local.get(key))[key];
+      const s = (await chrome.storage.sync.get(key))[key];
       if (s !== undefined) setState(s as T); // TODO: is undefined check necessary?
     })();
   }, []);
@@ -16,7 +16,7 @@ const useStorage = <T,>(key: string, initialState: T | (() => T)): [T, React.Dis
   useEffect(() => {
     if (state !== undefined) { // TODO: is undefined check necessary?
       (async () => {
-        await chrome.storage.local.set({ [key]: state });
+        await chrome.storage.sync.set({ [key]: state });
       })();
     }
   }, [state]);
