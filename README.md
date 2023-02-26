@@ -101,33 +101,40 @@ cp -p dist/unix/io.github.susumuota.nostr_keyx.json ~/Library/Application\ Suppo
 
 #### For Windows
 
-- You need to edit 2 lines in `dist/windows/io.github.susumuota.nostr_keyx.json`.
-  - Change `path` to specify the absolute path of `keychain.bat`.
-  - Change `allowed_origins` to specify the `id` of the extension. You can find the `id` of the extension in Chrome's extensions setting page `chrome://extensions`.
-  - See [this page](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host) for more details.
+- First, you need to allow PowerShell to run scripts.
+- Open PowerShell as an **Administrator**.
+- Run the following command to allow executing script. See details [here](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.3#remotesigned).
 
-```json
-{
-  "name": "io.github.susumuota.nostr_keyx",
-  "description": "A NIP-07 browser extension that uses the OS's native keychain application to protect your private keys.",
-  "path": "C:\\path\\to\\dist\\windows\\keychain.bat",
-  "type": "stdio",
-  "allowed_origins": [
-    "chrome-extension://jhpjgkhjimkbjiigognoefgnclgngklh/"
-  ]
-}
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 ```
 
-- Edit `dist/windows/register_nostr_keyx.reg`.
-  - Change `@="..."` to specify the absolute path of `dist/windows/io.github.susumuota.nostr_keyx.json`. See [this page](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host-location) for more details.
+- Exit PowerShell of **Administrator**.
+- Open PowerShell as a **normal user**.
+- Run `Unblock-File` to unblock PowerShell script files that were downloaded from the internet so you can run them. See details [here](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/unblock-file?view=powershell-7.3).
 
-```reg
-Windows Registry Editor Version 5.00
-[HKEY_CURRENT_USER\Software\Google\Chrome\NativeMessagingHosts\io.github.susumuota.nostr_keyx]
-@="C:\\path\\to\\dist\\windows\\io.github.susumuota.nostr_keyx.json"
+```powershell
+cd C:\path\to\dist\windows
+Unblock-File .\install.ps1
+Unblock-File .\uninstall.ps1
+Unblock-File .\add_privatekey.ps1
+Unblock-File .\get_privatekey.ps1
 ```
 
-- Double click `register_nostr_keyx.reg` on Explorer. It will add registry key. You can check it on Registry Editor by searching `nostr_keyx`. If you want to uninstall this extension, delete the registry key too.
+> **Note**: I recommend that you should check the contents of PowerShell script files before you run them. I have tested them in my environment, but I cannot guarantee anything. Basically, `install.ps1` performs the steps on [this page](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host-location) in PowerShell.
+
+- Run `install.ps1` to install the extension.
+
+```powershell
+.\install.ps1
+```
+
+- Paste the `id` of the extension. You can find the `id` of the extension in Chrome's extensions setting page `chrome://extensions`.
+- If you want to uninstall the extension, run `uninstall.ps1`.
+
+```powershell
+.\uninstall.ps1
+```
 
 ### Set your private key
 
@@ -188,29 +195,14 @@ security find-generic-password -a default -s nostr-keyx -w
 
 #### For Windows: Using command `add_privatekey.ps1`
 
-- You need to allow PowerShell to run local scripts. Open PowerShell as **Administrator** and run the following command to allow executing script. See details [here](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.3#remotesigned).
-
-```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
-```
-
-- Exit PowerShell as **Administrator**. Then, open PowerShell as a normal user.
-- Run `Unblock-File` to unblock PowerShell script files that were downloaded from the internet so you can run them. See details [here](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/unblock-file?view=powershell-7.3).
-
-```powershell
-cd C:\path\to\dist\windows
-Unblock-File .\add_privatekey.ps1
-Unblock-File .\get_privatekey.ps1
-```
-
 - Copy private key (e.g. `nsec1...`) to clipboard.
-- Run `add_privatekey.ps1` script to create a new entry for your private key. Here, `nostr-keyx` is the service name. It **MUST** be `nostr-keyx`.
+- Run `add_privatekey.ps1` to create a new entry for your private key. You **MUST** pass `nostr-keyx` as an argument.
 
 ```powershell
 .\add_privatekey.ps1 "nostr-keyx"
 ```
 
-- Dialog will be shown. Type `default` to `User name` and paste your private key to `Password` and click `OK`.
+- Dialog will be shown. Type `default` to `User name` field, paste your private key to `Password` field, then click `OK`.
 
 ![get_credential](https://user-images.githubusercontent.com/1632335/221339350-122fa0c2-e0a4-4843-bdd4-8fef58aec3a8.png)
 
