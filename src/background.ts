@@ -4,14 +4,14 @@
 // https://developer.chrome.com/docs/apps/nativeMessaging/
 // https://dev.classmethod.jp/articles/chrome-native-message/
 
-// account should be set by `popup.tsx`.
-const getAccount = async () => (
-  (await chrome.storage.local.get('account'))['account'] as string ?? 'default'
-);
-
 // NIP-07 API method names.
 // https://github.com/nostr-protocol/nips/blob/master/07.md
 const NIP_07_APIS = ['getPublicKey', 'signEvent', 'getRelays', 'nip04.encrypt', 'nip04.decrypt'];
+
+// account should be set by `popup.tsx`.
+const getAccount = async () => (
+  (await chrome.storage.sync.get('account'))['account'] as string ?? 'default'
+);
 
 // connect to `nostr_keyx` native app.
 let nativePort: chrome.runtime.Port;

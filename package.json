@@ -1,6 +1,6 @@
 {
   "name": "nostr-keyx",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A NIP-07 browser extension that uses the OS's native keychain application to protect your private keys.",
   "private": true,
   "type": "module",

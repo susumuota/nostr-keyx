@@ -25,10 +25,10 @@ There are already great extensions like [nos2x](https://github.com/fiatjaf/nos2x
 ### Install Node.js
 
 - `nostr-keyx` uses [Node.js](https://nodejs.org/) to provide NIP-07 functions.
-- Install [Node.js](https://nodejs.org/). e.g. `brew install node` for on macOS with Homebrew.
+- Install [Node.js](https://nodejs.org/). e.g. `brew install node` for macOS with Homebrew.
 - Open Terminal and run `which node` and copy the absolute path of `node` command. e.g. `/usr/local/bin/node`. We will use it later.
 
-### Option 1: Install from zip file
+### Option 1: Download zip file
 
 - Download the latest zip file from [Releases](https://github.com/susumuota/nostr-keyx/releases).
 - Unzip it. `nostr-keyx-{version}.zip` will be extracted to `nostr-keyx-{version}` folder.
@@ -257,14 +257,15 @@ pass insert nostr-keyx/default
 ### Test it on Iris or Snort
 
 - Open Chrome and go to `chrome://extensions/`.
+- Disable similar NIP-07 extensions, e.g. nos2x, Alby, etc. On Alby, you only need to disable `NIP-07` section on the settings.
 - Clear errors of the extension.
 - Reload the extension.
-- Disable similar NIP-07 extensions, e.g. nos2x, Alby, etc. On Alby, you only need to disable `NIP-07` section on the settings.
 - Click `Service Worker` to open dev console of the extension.
 - If you have used previous versions of this extension, you should clear the extension's cache. Type the following commands in the extension's dev console.
 
 ```javascript
 await chrome.storage.local.clear();
+await chrome.storage.sync.clear();
 await chrome.storage.session.clear();
 ```
 
@@ -313,8 +314,8 @@ await chrome.storage.session.clear();
 - [nostr-tools](https://github.com/nbd-wtf/nostr-tools): Tools for developing Nostr clients.
 - [noble-secp256k1](https://github.com/paulmillr/noble-secp256k1): JavaScript implementation of [secp256k1](https://www.secg.org/sec2-v2.pdf).
 - [scure-base](https://github.com/paulmillr/scure-base): Secure implementation of base64, etc.
-- [Iris](https://iris.to/): A web-based Nostr client.
-- [Snort](https://snort.social/): A web-based Nostr client.
+- [Iris](https://iris.to/): Web-based Nostr client.
+- [Snort](https://snort.social/): Web-based Nostr client.
 
 ## License
 
