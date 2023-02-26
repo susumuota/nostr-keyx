@@ -210,7 +210,7 @@ Unblock-File .\get_privatekey.ps1
 .\add_privatekey.ps1 "nostr-keyx"
 ```
 
-- Dialog will be shown. Type `default` to `Account Name` and paste your private key to `Password` and click `OK`.
+- Dialog will be shown. Type `default` to `User name` and paste your private key to `Password` and click `OK`.
 
 ![get_credential](https://user-images.githubusercontent.com/1632335/221339350-122fa0c2-e0a4-4843-bdd4-8fef58aec3a8.png)
 
@@ -275,11 +275,15 @@ await chrome.storage.session.clear();
 - Click `Nostr extension login` for Iris or `Login with Extension (NIP-07)` for Snort. It should use `window.nostr.getPublicKey` to get public key.
 - Post some notes. It should use `window.nostr.signEvent` to sign events with private key.
 - Send/receive direct messages. It should use `window.nostr.nip04.encrypt/decrypt` to encrypt/decrypt messages.
-- You can change private key by popup UI of the extension.
 
-![popup](https://user-images.githubusercontent.com/1632335/219871820-efb079ad-1bb0-4157-b327-a963e57ef453.png)
+### Usage
 
-- Press `NEW` button and enter your account name e.g. `bot`, then `ADD` again.
+- You can change account (private key) by popup UI of the extension.
+
+![popup](https://user-images.githubusercontent.com/1632335/221397756-d8f94c61-bd7a-4d56-92be-5d91beaeae74.png)
+
+- You can add an account. This account name must match the account name in the OS Keychain application. e.g. `default`, `bot`, `test`, etc.
+- Press `NEW` button and enter your account name, then press `ADD`.
 - You can switch accounts by selecting list items on the popup UI.
 
 ## Potential risks
