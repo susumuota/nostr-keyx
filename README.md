@@ -284,6 +284,7 @@ await chrome.storage.session.clear();
 - [x] Add Windows keychain applications support.
 - [x] GitHub Actions to build and publish the zip file.
 - [x] Add installer script.
+- [ ] UI to guide users to install the native messaging host.
 - [ ] Support [NIP-46](https://github.com/nostr-protocol/nips/blob/master/46.md).
 - [ ] Add YubiKey support.
 - [ ] Better error handling.
