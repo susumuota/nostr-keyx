@@ -1,6 +1,6 @@
 {
   "name": "nostr-keyx",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "A NIP-07 browser extension that uses the OS's native keychain application to protect your private keys.",
   "private": true,
   "type": "module",
@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "build-js": "esbuild --bundle --minify --format=esm --outdir=dist/extension src/*",
-    "build-node": "esbuild --bundle --minify --format=esm --platform=node --outdir=dist/unix --out-extension:.js=.mjs node/*.ts ; cp -p dist/unix/*.mjs dist/windows",
+    "build-node": "esbuild --bundle --minify --format=esm --platform=node --outdir=dist/macos --out-extension:.js=.mjs node/*.ts ; cp -p dist/macos/*.mjs dist/windows ; cp -p dist/macos/*.mjs dist/linux",
     "build": "rm -rf dist ; cp -rp public dist ; concurrently \"npm:build-*\"",
     "watch-js": "esbuild --watch --bundle --sourcemap=inline --format=esm --outdir=dist/extension src/*",
     "watch-node": "esbuild --watch --bundle --sourcemap=inline --format=esm --platform=node --outdir=dist/unix --out-extension:.js=.mjs node/*.ts",

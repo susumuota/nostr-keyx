@@ -49,8 +49,7 @@ npm run build
 ### Install Node.js
 
 - `nostr-keyx` uses [Node.js](https://nodejs.org/) to provide NIP-07 functions and access the OS's native keychain application.
-- Install [Node.js](https://nodejs.org/) and make sure `node` command is available in your terminal.
-- Open a terminal and run `which node` and copy the absolute path of `node` command. e.g. `/usr/local/bin/node`. We will use it later.
+- Install [Node.js](https://nodejs.org/) and make sure `node` command is available in your terminal (type `which node` to confirm).
 
 ### Install Chrome extension
 
@@ -63,47 +62,27 @@ npm run build
 
 ### Install Chrome native messaging host
 
-- This extension uses [Chrome Native Messaging](https://developer.chrome.com/docs/apps/nativeMessaging/) to communicate with native Node.js script.
-- You need to install a native messaging host which is a JSON file that specifies the absolute path of the Node.js script.
+- This Chrome extension uses [Chrome Native Messaging](https://developer.chrome.com/docs/apps/nativeMessaging/) to communicate with a native Node.js script.
+- You need to install a native messaging host file which is a JSON file that specifies the absolute path of the Node.js script.
 
 #### For macOS and Linux
 
-- You need to edit 2 lines in `dist/unix/io.github.susumuota.nostr_keyx.json`.
-  - Change `path` to specify the absolute path of `keychain.mjs`.
-  - Change `allowed_origins` to specify the `id` of the extension. You can find the `id` of the extension in Chrome's extensions setting page `chrome://extensions`.
-  - See [this page](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host) for more details.
+> **Note**: I recommend that you should check the content of `install.sh` before you run it. I have tested it in my environment, but I cannot guarantee anything. Basically, `install.sh` performs the steps on [this page](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host) in bash script.
 
-```json
-{
-  "name": "io.github.susumuota.nostr_keyx",
-  "description": "A NIP-07 browser extension that uses the OS's native keychain application to protect your private keys.",
-  "path": "/path/to/dist/unix/keychain.mjs",
-  "type": "stdio",
-  "allowed_origins": [
-    "chrome-extension://jhpjgkhjimkbjiigognoefgnclgngklh/"
-  ]
-}
-```
-
-- Copy `dist/unix/io.github.susumuota.nostr_keyx.json` to [NativeMessagingHosts directory](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host-location).
+- Run `install.sh` to install the native messaging host.
 
 ```sh
-cp -p dist/unix/io.github.susumuota.nostr_keyx.json ~/Library/Application\ Support/Google/Chrome/NativeMessagingHosts
+cd /path/to/dist/macos  # or linux
+cat ./install.sh        # confirm before you run it
+bash ./install.sh       # or bash ./install.sh <extension_id>
 ```
 
-- Edit shebang of `dist/unix/keychain.mjs` to specify the absolute path of `node` command. [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) means the first line of the script file. e.g. `#!/usr/local/bin/node`.
+- Paste the `id` of the extension. e.g. `jhpjgkhjimkbjiigognoefgnclgngklh`. You can find the `id` of the extension in Chrome's extensions setting page `chrome://extensions`.
+- If you want to uninstall the native messaging host, run `uninstall.sh`.
 
 ```sh
-#!/usr/local/bin/node
-...
-```
-
-- Open Terminal, run it with absolute path, input some text and enter, then it will show error but it's OK. If your shebang is wrong, it will show `no such file or directory` error.
-
-```sh
-/path/to/dist/unix/keychain.mjs
-# 11111 # input some text and enter
-# ({"result":null,"error":"unknown method"}...
+cat ./uninstall.sh      # confirm before you run it
+bash ./uninstall.sh
 ```
 
 #### For Windows
@@ -128,11 +107,12 @@ Unblock-File .\add_privatekey.ps1
 Unblock-File .\get_privatekey.ps1
 ```
 
-> **Note**: I recommend that you should check the contents of PowerShell script files before you run them. I have tested them in my environment, but I cannot guarantee anything. Basically, `install.ps1` performs the steps on [this page](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host-location) in PowerShell.
+> **Note**: I recommend that you should check the contents of PowerShell script files before you run them. I have tested them in my environment, but I cannot guarantee anything. Basically, `install.ps1` performs the steps on [this page](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host) in PowerShell.
 
 - Run `install.ps1` to install the native messaging host.
 
 ```powershell
+cat .\install.ps1    # confirm before you run it
 .\install.ps1
 ```
 
@@ -140,6 +120,7 @@ Unblock-File .\get_privatekey.ps1
 - If you want to uninstall the native messaging host, run `uninstall.ps1`.
 
 ```powershell
+cat .\uninstall.ps1  # confirm before you run it
 .\uninstall.ps1
 ```
 
@@ -302,6 +283,7 @@ await chrome.storage.session.clear();
 - [x] Add profiles to switch multiple accounts.
 - [x] Add Windows keychain applications support.
 - [x] GitHub Actions to build and publish the zip file.
+- [x] Add installer script.
 - [ ] Support [NIP-46](https://github.com/nostr-protocol/nips/blob/master/46.md).
 - [ ] Add YubiKey support.
 - [ ] Better error handling.
