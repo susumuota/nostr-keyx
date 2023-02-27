@@ -13,32 +13,43 @@ const getAccount = async () => (
   (await chrome.storage.sync.get('account'))['account'] as string ?? 'default'
 );
 
-// connect to `nostr_keyx` native app.
-let nativePort: chrome.runtime.Port;
-try {
-  nativePort = chrome.runtime.connectNative('io.github.susumuota.nostr_keyx');
-} catch (err: any) {
-  console.error('background.ts: nativePort error', err);
-  throw err;
+const setBadge = (text: string, color: string) => {
+  chrome.action.setBadgeText({ text });
+  if (color) chrome.action.setBadgeBackgroundColor({ color });
+};
+
+// connect to `nostr_keyx` native messaging host.
+let nativePort: chrome.runtime.Port | null;
+nativePort = chrome.runtime.connectNative('io.github.susumuota.nostr_keyx');
+if (chrome.runtime.lastError) { // TODO: never happens?
+  console.error('background.ts: connectNative:', chrome.runtime.lastError.message);
+  setBadge('!', 'red');
 }
 
-// reconnect `nostr_keyx` native app when it's disconnected.
+// if `nostr_keyx` native app is not installed, show error message and set badge color to red.
 nativePort.onDisconnect.addListener(() => {
+  console.debug('background.ts: nativePort.onDisconnect');
   if (chrome.runtime.lastError) {
-    console.error('background.ts: nativePort.onDisconnect: lastError', chrome.runtime.lastError);
+    console.error('background.ts: nativePort.onDisconnect:', chrome.runtime.lastError.message);
+    setBadge('!', 'red');
   }
-  nativePort = chrome.runtime.connectNative('io.github.susumuota.nostr_keyx');
-  console.debug('background.ts: nativePort', nativePort);
+  nativePort = null;
 });
 
 // receive requests from `content.ts` and send responses to `content.ts`.
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.debug('background.ts: onMessage: request', request);
 
+  const send = (response: any) => {
+    (response.error ? console.error : console.debug)('background.ts: onMessage: response', response);
+    response.error ? setBadge('!', 'red') : setBadge('', '');
+    sendResponse(response);
+  };
+
   // check request method
   const { id, method }: { id: string, method: string } = request;
   if (!(id && NIP_07_APIS.includes(method) || method === 'inject')) {
-    sendResponse({ id, result: null, error: 'unknown method' });
+    send({ id, result: null, error: 'invalid method' });
     return true;
   }
 
@@ -48,7 +59,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // https://stackoverflow.com/a/9517879
   if (method === 'inject') {
     if (!(sender.tab && sender.tab.id)) {
-      sendResponse({ id, result: null, error: 'no tab' });
+      send({ id, result: null, error: 'no tab' });
       return true;
     }
     const tabId = sender.tab.id;
@@ -57,10 +68,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         const results = await chrome.scripting.executeScript({
           target: { tabId }, world: 'MAIN', files: ['inject.js'] // world: 'MAIN' is important
         });
-        sendResponse({ id, result: results, error: null });
+        send({ id, result: results, error: null });
       } catch (err: any) {
-        console.error('background.ts: onMessage: injection error', err);
-        sendResponse({ id, result: null, error: err.toString() });
+        send({ id, result: null, error: err.toString() });
       }
     })();
     return true;
@@ -70,12 +80,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // send request to `nostr_keyx` native app.
   // `sendNativeMessage` also work, but it spawns a node process every call, which is very slow.
   // native port spawns a node process only once, which is much faster.
+
+  if (!nativePort) {
+    send({ id, result: null, error: 'no nativePort' });
+    return true;
+  }
+
   try {
     const listener = (response: any) => {
       if (response.id !== id) return;
-      nativePort.onMessage.removeListener(listener);
-      console.debug('background.ts: onMessage: response', response);
-      sendResponse(response);
+      nativePort?.onMessage.removeListener(listener);
+      send(response);
     };
     nativePort.onMessage.addListener(listener);
     (async () => {
@@ -83,8 +98,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       nativePort.postMessage({...request, account: await getAccount()});
     })();
   } catch (err: any) {
-    console.error('background.ts: onMessage: nativePort error', err);
-    sendResponse({ id, result: null, error: err.toString() });
+    send({ id, result: null, error: err.toString() });
   }
 
   return true;
