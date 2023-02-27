@@ -20,20 +20,16 @@ A [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md) browser ext
 
 There are already great extensions like [nos2x](https://github.com/fiatjaf/nos2x) or [Alby](https://getalby.com/) for [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md). Unlike these existing extensions, `nostr-keyx` uses the **OS's native keychain application** (e.g. [Keychain Access](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac) on MacOS) to store your private key instead of the web browser's local storage. In addition, all of the [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md) functions (`signEvent`, `encrypt`, `decrypt`, etc.) are executed outside of the web browser's memory. So it might be less risky than other extensions. I hope this extension helps you too.
 
-## Install
+## Download
 
-### Install Node.js
-
-- `nostr-keyx` uses [Node.js](https://nodejs.org/) to provide NIP-07 functions.
-- Install [Node.js](https://nodejs.org/). e.g. `brew install node` for macOS with Homebrew.
-- Open Terminal and run `which node` and copy the absolute path of `node` command. e.g. `/usr/local/bin/node`. We will use it later.
+- There are 2 options to download `nostr-keyx`.
 
 ### Option 1: Download zip file
 
 - Download the latest zip file from [Releases](https://github.com/susumuota/nostr-keyx/releases).
 - Unzip it. `nostr-keyx-{version}.zip` will be extracted to `nostr-keyx-{version}` folder.
 
-### Option 2: Build from source
+### Option 2: Download with `git` and build from source
 
 > **Note**: For Windows, install [Git for Windows](https://gitforwindows.org/), start `git-bash` and run `npm config set script-shell /usr/bin/bash`. Otherwise, you will get error at `npm run build`.
 
@@ -46,6 +42,16 @@ npm ci
 npm run build
 ```
 
+## Install
+
+- You need to install Node.js, a Chrome extension and a Chrome native messaging host to run `nostr-keyx`.
+
+### Install Node.js
+
+- `nostr-keyx` uses [Node.js](https://nodejs.org/) to provide NIP-07 functions and access the OS's native keychain application.
+- Install [Node.js](https://nodejs.org/) and make sure `node` command is available in your terminal.
+- Open a terminal and run `which node` and copy the absolute path of `node` command. e.g. `/usr/local/bin/node`. We will use it later.
+
 ### Install Chrome extension
 
 - Open Chrome's extensions setting page `chrome://extensions`.
@@ -55,9 +61,10 @@ npm run build
 - You will see error messages but it's OK for now.
 - Copy the `id` of the extension. e.g. `jhpjgkhjimkbjiigognoefgnclgngklh`. We will use it later.
 
-### Setup Chrome's Native Messaging
+### Install Chrome native messaging host
 
-- This extension uses [Chrome's Native Messaging](https://developer.chrome.com/docs/apps/nativeMessaging/) to communicate with native Node.js script.
+- This extension uses [Chrome Native Messaging](https://developer.chrome.com/docs/apps/nativeMessaging/) to communicate with native Node.js script.
+- You need to install a native messaging host which is a JSON file that specifies the absolute path of the Node.js script.
 
 #### For macOS and Linux
 
@@ -123,26 +130,28 @@ Unblock-File .\get_privatekey.ps1
 
 > **Note**: I recommend that you should check the contents of PowerShell script files before you run them. I have tested them in my environment, but I cannot guarantee anything. Basically, `install.ps1` performs the steps on [this page](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host-location) in PowerShell.
 
-- Run `install.ps1` to install the extension.
+- Run `install.ps1` to install the native messaging host.
 
 ```powershell
 .\install.ps1
 ```
 
-- Paste the `id` of the extension. You can find the `id` of the extension in Chrome's extensions setting page `chrome://extensions`.
-- If you want to uninstall the extension, run `uninstall.ps1`.
+- Paste the `id` of the extension. e.g. `jhpjgkhjimkbjiigognoefgnclgngklh`. You can find the `id` of the extension in Chrome's extensions setting page `chrome://extensions`.
+- If you want to uninstall the native messaging host, run `uninstall.ps1`.
 
 ```powershell
 .\uninstall.ps1
 ```
 
-### Set your private key
+## Setup
 
-> **Note**: If you need a private key for test, you can generate it with `npm run genkey`.
+- Save your private key to the OS's native keychain application.
 
-#### For macOS: Option 1: Using command `security`
+> **Note**: If you need private keys for test, you can generate them with `npm run genkey` (needs source, see option 2 above).
 
-- Here, I show you how to set your private key on Terminal. You can also use GUI [Keychain Access](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac). I will show you later.
+### For macOS: Option 1: Using command `security`
+
+- Here, I show you how to save your private key on Terminal. You can also use [Keychain Access](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac). I will show you later.
 - Copy private key (e.g. `nsec1...`) to clipboard.
 - Open Terminal.
 - Run `security add-generic-password` command to create a new entry for your private key. Here, `-a` specifies the account name e.g `default`, `-s` specifies the service name (service **MUST** be `nostr-keyx`), and `-w` means the password will be asked.
@@ -165,11 +174,11 @@ security find-generic-password -a default -s nostr-keyx -w
 security delete-generic-password -a default -s nostr-keyx
 ```
 
-- You can create multiple accounts for multiple private keys. e.g. `default`, `bot`, `test`, etc. But service name must be `nostr-keyx`.
+- You can create multiple accounts for multiple private keys. e.g. `default`, `bot`, `test`, etc. But service name **MUST** be `nostr-keyx`.
 
 > **Note**: Right now, `security` command can access the private key without password. But you can revoke that by Keychain Access application. See the next section.
 
-#### For macOS: Option 2: Using GUI [Keychain Access](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac)
+### For macOS: Option 2: Using [Keychain Access](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac)
 
 - Open spotlight search and type `Keychain Access` and open it.
 - `File` menu > `New Password Item...`
@@ -193,7 +202,7 @@ security find-generic-password -a default -s nostr-keyx -w
 ![revoke_application](https://user-images.githubusercontent.com/1632335/220175649-39b206cc-a845-4c48-83ec-367668aacabe.png)
 
 
-#### For Windows: Using command `add_privatekey.ps1`
+### For Windows: Using command `add_privatekey.ps1`
 
 - Copy private key (e.g. `nsec1...`) to clipboard.
 - Run `add_privatekey.ps1` to create a new entry for your private key. You **MUST** pass `nostr-keyx` as an argument.
@@ -211,7 +220,7 @@ security find-generic-password -a default -s nostr-keyx -w
 
 ![credential_manager](https://user-images.githubusercontent.com/1632335/221339296-9fa1eddb-bcff-47c1-859f-0ac717f2bf81.png)
 
-#### For Linux: Using command `pass`
+### For Linux: Using command `pass`
 
 - Setup `pass`. See [this page](https://www.passwordstore.org/).
 - Copy private key (e.g. `nsec1...`) to clipboard.
@@ -268,7 +277,7 @@ await chrome.storage.session.clear();
 - Post some notes. It should use `window.nostr.signEvent` to sign events with private key.
 - Send/receive direct messages. It should use `window.nostr.nip04.encrypt/decrypt` to encrypt/decrypt messages.
 
-### Usage
+## Usage
 
 - You can change account (private key) by popup UI of the extension.
 
