@@ -40,7 +40,7 @@ fi
 # replace __EXTENSION_ID__ and path of keychain.mjs in json file
 # TODO: error handling
 sed -e "s/__EXTENSION_ID__/${extension_id}/" \
-  -e "s|/path/to/dist/unix/keychain.mjs|${keychain_path}|" \
+  -e "s|/path/to/keychain.mjs|${keychain_path}|" \
   "$json_stab_path" > "$json_path"
 
 # copy json file to native messaging host location
