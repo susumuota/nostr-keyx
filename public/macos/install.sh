@@ -1,8 +1,10 @@
 #!/bin/bash
 
+# SPDX-FileCopyrightText: 2023 Susumu OTA <1632335+susumuota@users.noreply.github.com>
+# SPDX-License-Identifier: MIT
+
 # settings
 node_path=$(which node)  # specify node path if you want to use another one
-
 
 # constants (do not edit)
 keychain="keychain.mjs"
