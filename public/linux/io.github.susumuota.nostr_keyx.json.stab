@@ -1,9 +1,9 @@
 {
   "name": "io.github.susumuota.nostr_keyx",
   "description": "A NIP-07 browser extension that uses the OS's native keychain application to protect your private keys.",
-  "path": "/path/to/dist/unix/keychain.mjs",
+  "path": "/path/to/keychain.mjs",
   "type": "stdio",
   "allowed_origins": [
-    "chrome-extension://(WRITE EXTENSION ID HERE WITHOUT BRACKETS)/"
+    "chrome-extension://__EXTENSION_ID__/"
   ]
 }
