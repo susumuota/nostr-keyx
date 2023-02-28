@@ -69,7 +69,7 @@ npm run build
 
 > **Note**: I recommend that you should check the content of `install.sh` before you run it. I have tested it in my environment, but I cannot guarantee anything. Basically, `install.sh` performs the steps on [this page](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host) in bash script.
 
-- Run `install.sh` to install the native messaging host.
+- Run [`install.sh`](https://github.com/susumuota/nostr-keyx/blob/main/public/macos/install.sh) to install the native messaging host.
 
 ```sh
 cd /path/to/dist/macos  # or linux
@@ -78,7 +78,7 @@ bash ./install.sh       # or bash ./install.sh <extension_id>
 ```
 
 - Paste the `id` of the extension. e.g. `jhpjgkhjimkbjiigognoefgnclgngklh`. You can find the `id` of the extension in Chrome's extensions setting page `chrome://extensions`.
-- If you want to uninstall the native messaging host, run `uninstall.sh`.
+- If you want to uninstall the native messaging host, run [`uninstall.sh`](https://github.com/susumuota/nostr-keyx/blob/main/public/macos/uninstall.sh).
 
 ```sh
 cat ./uninstall.sh      # confirm before you run it
@@ -109,7 +109,7 @@ Unblock-File .\get_privatekey.ps1
 
 > **Note**: I recommend that you should check the contents of PowerShell script files before you run them. I have tested them in my environment, but I cannot guarantee anything. Basically, `install.ps1` performs the steps on [this page](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host) in PowerShell.
 
-- Run `install.ps1` to install the native messaging host.
+- Run [`install.ps1`](https://github.com/susumuota/nostr-keyx/blob/main/public/windows/install.ps1) to install the native messaging host.
 
 ```powershell
 cat .\install.ps1    # confirm before you run it
@@ -117,7 +117,7 @@ cat .\install.ps1    # confirm before you run it
 ```
 
 - Paste the `id` of the extension. e.g. `jhpjgkhjimkbjiigognoefgnclgngklh`. You can find the `id` of the extension in Chrome's extensions setting page `chrome://extensions`.
-- If you want to uninstall the native messaging host, run `uninstall.ps1`.
+- If you want to uninstall the native messaging host, run [`uninstall.ps1`](https://github.com/susumuota/nostr-keyx/blob/main/public/windows/uninstall.ps1).
 
 ```powershell
 cat .\uninstall.ps1  # confirm before you run it
@@ -185,16 +185,26 @@ security find-generic-password -a default -s nostr-keyx -w
 
 ### For Windows: Using command `add_privatekey.ps1`
 
+- Confirm content of [`add_privatekey.ps1`](https://github.com/susumuota/nostr-keyx/blob/main/public/windows/add_privatekey.ps1) whether it is safe to run. See details [here](https://learn.microsoft.com/en-us/uwp/api/windows.security.credentials.passwordvault?view=winrt-22621) and [here](https://learn.microsoft.com/en-us/uwp/api/windows.security.credentials.passwordcredential?view=winrt-22621).
 - Copy private key (e.g. `nsec1...`) to clipboard.
 - Run `add_privatekey.ps1` to create a new entry for your private key. You **MUST** pass `nostr-keyx` as an argument.
 
 ```powershell
+cat .\add_privatekey.ps1           # confirm before you run it
 .\add_privatekey.ps1 "nostr-keyx"
 ```
 
 - Dialog will be shown. Type `default` to `User name` field, paste your private key to `Password` field, then click `OK`.
 
 ![get_credential](https://user-images.githubusercontent.com/1632335/221339350-122fa0c2-e0a4-4843-bdd4-8fef58aec3a8.png)
+
+- Confirm content of [`get_privatekey.ps1`](https://github.com/susumuota/nostr-keyx/blob/main/public/windows/get_privatekey.ps1) whether it is safe to run. See details [here](https://learn.microsoft.com/en-us/uwp/api/windows.security.credentials.passwordvault?view=winrt-22621) and [here](https://learn.microsoft.com/en-us/uwp/api/windows.security.credentials.passwordcredential?view=winrt-22621).
+- Run `get_privatekey.ps1` to get your private key.
+
+```powershell
+cat .\get_privatekey.ps1           # confirm before you run it
+.\get_privatekey.ps1 "default" "nostr-keyx"
+```
 
 - Type `credential manager` in the search box on the taskbar and select [Credential Manager](https://support.microsoft.com/en-us/windows/accessing-credential-manager-1b5c916a-6a16-889f-8581-fc16e8165ac0) Control panel.
 - Click `Web Credentials` and you will see the entry for your private key.
