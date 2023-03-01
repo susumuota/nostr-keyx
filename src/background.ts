@@ -36,13 +36,16 @@ nativePort.onDisconnect.addListener(() => {
   nativePort = null;
 });
 
+let count = 0;
+
 // receive requests from `content.ts` and send responses to `content.ts`.
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.debug('background.ts: onMessage: request', request);
 
   const send = (response: any) => {
     (response.error ? console.error : console.debug)('background.ts: onMessage: response', response);
-    response.error ? setBadge('!', 'red') : setBadge('', '');
+    if (['signEvent', 'nip04.encrypt', 'nip04.decrypt'].includes(request.method)) count += 1;
+    response.error ? setBadge('!', 'red') : setBadge(count.toString(), 'white');
     sendResponse(response);
   };
 
