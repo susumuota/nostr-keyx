@@ -22,16 +22,16 @@ const setBadge = (text: string, color: string) => {
 let nativePort: chrome.runtime.Port | null;
 nativePort = chrome.runtime.connectNative('io.github.susumuota.nostr_keyx');
 if (chrome.runtime.lastError) { // TODO: never happens?
-  console.error('background.ts: connectNative:', chrome.runtime.lastError.message);
+  console.log('background.ts: connectNative:', chrome.runtime.lastError.message);
   setBadge('!', 'red');
 }
 
 // if `nostr_keyx` native app is not installed, show error message and set badge color to red.
 nativePort.onDisconnect.addListener(() => {
-  console.debug('background.ts: nativePort.onDisconnect');
   if (chrome.runtime.lastError) {
-    console.error('background.ts: nativePort.onDisconnect:', chrome.runtime.lastError.message);
+    console.log('background.ts: nativePort.onDisconnect:', chrome.runtime.lastError.message);
     setBadge('!', 'red');
+    chrome.tabs.create({ url: 'notice.html' });
   }
   nativePort = null;
 });
@@ -44,7 +44,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.debug('background.ts: onMessage: request', request);
 
   const send = (response: any) => {
-    (response.error ? console.error : console.debug)('background.ts: onMessage: response', response);
+    (response.error ? console.log : console.debug)('background.ts: onMessage: response', response);
     if (['signEvent', 'nip04.encrypt', 'nip04.decrypt'].includes(request.method)) count += 1;
     count = count % 100;
     response.error ? setBadge('!', 'red') : setBadge(count.toString(), 'white');
