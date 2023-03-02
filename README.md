@@ -44,12 +44,7 @@ npm run build
 
 ## Install
 
-- You need to install Node.js, a Chrome extension and a Chrome native messaging host to run `nostr-keyx`.
-
-### Install Node.js
-
-- `nostr-keyx` uses [Node.js](https://nodejs.org/) to provide NIP-07 functions and access the OS's native keychain application.
-- Install [Node.js](https://nodejs.org/) and make sure `node` command is available in your terminal (type `which node` to confirm).
+- You need to install a Chrome extension, Node.js and a Chrome native messaging host to run `nostr-keyx`.
 
 ### Install Chrome extension
 
@@ -60,6 +55,11 @@ npm run build
 - You will see error messages but it's OK for now.
 - Copy the `id` of the extension. e.g. `jhpjgkhjimkbjiigognoefgnclgngklh`. We will use it later.
 
+### Install Node.js
+
+- `nostr-keyx` uses [Node.js](https://nodejs.org/) to provide NIP-07 functions and access the OS's native keychain application.
+- Install [Node.js](https://nodejs.org/) and make sure `node` command is available in your terminal (type `which node` to confirm).
+
 ### Install Chrome native messaging host
 
 - This Chrome extension uses [Chrome Native Messaging](https://developer.chrome.com/docs/apps/nativeMessaging/) to communicate with a native Node.js script.
@@ -67,7 +67,7 @@ npm run build
 
 #### For macOS and Linux
 
-> **Note**: I recommend that you should check the content of `install.sh` before you run it. I have tested it in my environment, but I cannot guarantee anything. Basically, `install.sh` performs the steps on [this page](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host) in bash script.
+> **Note**: I recommend that you should check the content of `install.sh` before you run it. I have tested it in my environment, but I cannot guarantee anything. Basically, `install.sh` performs the steps on [this page](https://developer.chrome.com/docs/apps/nativeMessaging/#native-messaging-host) in `bash` script.
 
 - Run [`install.sh`](https://github.com/susumuota/nostr-keyx/blob/main/public/macos/install.sh) to install the native messaging host.
 
@@ -278,6 +278,12 @@ await chrome.storage.session.clear();
 - Press `NEW` button and enter your account name, then press `ADD`.
 - You can switch accounts by selecting list items on the popup UI.
 
+## Experimental features
+
+- The popup icon shows the number of API calls accessing the private key (`signEvent`, `encrypt` and `decrypt`). You should keep your eyes on the **growth of this number** in order to monitor the behavior of web-based Nostr clients. The number is reset to zero when it reaches 100 due to space limitations in the popup icon.
+
+![image](https://user-images.githubusercontent.com/1632335/222151354-57118ef0-f76b-4e7e-acf3-3c1d915acdd6.png)
+
 ## Potential risks
 
 - This extension passes your private key to [secp256k1.schnorr.sign](https://github.com/paulmillr/noble-secp256k1#schnorrsignmessage-privatekey) and [secp256k1.getSharedSecret](https://github.com/paulmillr/noble-secp256k1#getsharedsecretprivatekeya-publickeyb). The security of this extension depends heavily on these functions.
@@ -295,11 +301,12 @@ await chrome.storage.session.clear();
 - [x] GitHub Actions to build and publish the zip file.
 - [x] Add installer script.
 - [ ] UI to guide users to install the native messaging host.
+- [ ] Add a stats page to show the number of API calls accessing the private key.
 - [ ] Support [NIP-46](https://github.com/nostr-protocol/nips/blob/master/46.md).
-- [ ] Add YubiKey support.
 - [ ] Better error handling.
 - [ ] Test `relays`.
 - [ ] Chrome Web Store?
+- [ ] Add YubiKey support. At the moment, it looks hard. Related information: [here](https://support.yubico.com/hc/en-us/articles/360016649139-YubiKey-5-2-Enhancements-to-OpenPGP-3-4-Support), [here](https://bitcoindev.network/using-gpg-as-a-bitcoin-address/) and [here](https://github.com/Yubico/yubico-piv-tool/issues/405#issuecomment-1289079879).
 
 ## Source code
 
@@ -321,8 +328,8 @@ MIT License, see [LICENSE](LICENSE) file.
 
 ## Author
 
-Susumu OTA
+S. Ota
 
 - nostr: `npub1susumuq8u7v0sp2f5jl3wjuh8hpc3cqe2tc2j5h4gu7ze7z20asq2w0yu8`
-- Twitter: [@susumuota](https://twitter.com/susumuota)
 - GitHub: [susumuota](https://github.com/susumuota)
+- Twitter: [@susumuota](https://twitter.com/susumuota)
