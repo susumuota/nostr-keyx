@@ -300,7 +300,7 @@ await chrome.storage.session.clear();
 - [x] Add Windows keychain applications support.
 - [x] GitHub Actions to build and publish the zip file.
 - [x] Add installer script.
-- [ ] UI to guide users to install the native messaging host.
+- [x] UI to guide users to install the native messaging host.
 - [ ] Add a stats page to show the number of API calls accessing the private key.
 - [ ] Support [NIP-46](https://github.com/nostr-protocol/nips/blob/master/46.md).
 - [ ] Better error handling.
