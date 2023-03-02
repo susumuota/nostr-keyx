@@ -36,6 +36,7 @@ nativePort.onDisconnect.addListener(() => {
   nativePort = null;
 });
 
+// TODO: need more sophisticated API usage stats?
 let count = 0;
 
 // receive requests from `content.ts` and send responses to `content.ts`.
@@ -45,6 +46,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   const send = (response: any) => {
     (response.error ? console.error : console.debug)('background.ts: onMessage: response', response);
     if (['signEvent', 'nip04.encrypt', 'nip04.decrypt'].includes(request.method)) count += 1;
+    count = count % 100;
     response.error ? setBadge('!', 'red') : setBadge(count.toString(), 'white');
     sendResponse(response);
   };
