@@ -8,9 +8,8 @@ import { useStore } from "./useStore";
 
 function DeleteDialog() {
   const account = useStore(state => state.account);
-  const setAccount = useStore(state => state.setAccount);
   const accountList = useStore(state => state.accountList);
-  const setAccountList = useStore(state => state.setAccountList);
+  const deleteAccount = useStore(state => state.deleteAccount);
   const isDialog = useStore(state => state.isDialog);
   const setDialog = useStore(state => state.setDialog);
   const showMessage = useStore(state => state.showMessage);
@@ -23,8 +22,7 @@ function DeleteDialog() {
     if (!account) return showMessage('empty account');
     if (account === 'default') return showMessage('cannot delete default account');
     if (!accountList.includes(account)) return showMessage('no such account');
-    setAccountList(accountList.filter(a => a !== account));
-    setAccount('default');
+    deleteAccount(account);
     showMessage('deleted account: ' + account);
   }, [account, accountList]);
 

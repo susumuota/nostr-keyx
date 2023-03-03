@@ -12,13 +12,16 @@ type Store = {
   isDrawer: boolean;
   isDialog: boolean;
   setAccount: (account: string) => void;
-  setAccountList: (accountList: string[]) => void;
+  addAccount: (account: string) => void;
+  deleteAccount: (account: string) => void;
   setMessage: (message: string) => void;
   setSnackbar: (isSnackbar: boolean) => void;
   showMessage: (message: string) => void;
   setDrawer: (isDrawer: boolean) => void;
   setDialog: (isDialog: boolean) => void;
 }
+
+const DEFAULT_ACCOUNT = 'default';
 
 // https://github.com/pmndrs/zustand/blob/main/docs/integrations/persisting-store-data.md#how-can-i-use-a-custom-storage-engine
 const chromeStorageSync: StateStorage = { // TODO: PersistStorage
@@ -35,14 +38,15 @@ const chromeStorageSync: StateStorage = { // TODO: PersistStorage
 
 // https://github.com/pmndrs/zustand/blob/main/docs/integrations/persisting-store-data.md#how-do-i-use-it-with-typescript
 const useStore = create<Store>()(persist((set) => ({
-  account: 'default',
-  accountList: ['default'],
+  account: DEFAULT_ACCOUNT,
+  accountList: [DEFAULT_ACCOUNT],
   message: '',
   isSnackbar: false,
   isDrawer: false,
   isDialog: false,
-  setAccount: (account: string) => set({ account }),
-  setAccountList: (accountList: string[]) => set({ accountList }),
+  setAccount: (account: string) => set({ account }), // TODO: if account is not in accountList, add it or throw error or just ignore?
+  addAccount: (account: string) => set(state => ({ account, accountList: [...state.accountList, account] })),
+  deleteAccount: (account: string) => set(state => ({ account: DEFAULT_ACCOUNT, accountList: state.accountList.filter((a) => a !== account) })),
   setMessage: (message: string) => set({ message }),
   setSnackbar: (isSnackbar: boolean) => set({ isSnackbar }),
   showMessage: (message: string) => set({ message, isSnackbar: true, isDrawer: false, isDialog: false }),
