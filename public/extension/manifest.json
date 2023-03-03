@@ -2,7 +2,7 @@
   "manifest_version": 3,
 
   "name": "nostr-keyx",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "A NIP-07 browser extension that uses the OS's native keychain application to protect your private keys.",
   "author": "Susumu OTA",
   "homepage_url": "https://github.com/susumuota/nostr-keyx",

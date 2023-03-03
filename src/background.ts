@@ -9,9 +9,12 @@
 const NIP_07_APIS = ['getPublicKey', 'signEvent', 'getRelays', 'nip04.encrypt', 'nip04.decrypt'];
 
 // account should be set by `popup.tsx`.
-const getAccount = async () => (
-  (await chrome.storage.sync.get('account'))['account'] as string ?? 'default'
-);
+const getAccount = async () => {
+  const nostr_keyx = (await chrome.storage.sync.get('nostr-keyx'))['nostr-keyx'] as string;
+  if (!nostr_keyx) return 'default';
+  const json = JSON.parse(nostr_keyx);
+  return json?.state?.account ?? 'default';
+};
 
 const setBadge = (text: string, color: string) => {
   chrome.action.setBadgeText({ text });
