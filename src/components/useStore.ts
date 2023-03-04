@@ -4,24 +4,23 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage, StateStorage } from 'zustand/middleware'
 
+import { DEFAULT_ACCOUNT, DEFAULT_URL_LIST } from '../common';
+
 type Store = {
   account: string;
   accountList: string[];
+  urlList: string[];
   message: string;
   isSnackbar: boolean;
-  isDrawer: boolean;
-  isDialog: boolean;
   setAccount: (account: string) => void;
   addAccount: (account: string) => void;
   deleteAccount: (account: string) => void;
-  setMessage: (message: string) => void;
+  addURL: (url: string) => void;
+  deleteURL: (url: string) => void;
+  restoreURLList: () => void;
   setSnackbar: (isSnackbar: boolean) => void;
   showMessage: (message: string) => void;
-  setDrawer: (isDrawer: boolean) => void;
-  setDialog: (isDialog: boolean) => void;
 }
-
-const DEFAULT_ACCOUNT = 'default';
 
 // https://github.com/pmndrs/zustand/blob/main/docs/integrations/persisting-store-data.md#how-can-i-use-a-custom-storage-engine
 const chromeStorageSync: StateStorage = { // TODO: PersistStorage
@@ -40,23 +39,37 @@ const chromeStorageSync: StateStorage = { // TODO: PersistStorage
 const useStore = create<Store>()(persist((set) => ({
   account: DEFAULT_ACCOUNT,
   accountList: [DEFAULT_ACCOUNT],
+  urlList: DEFAULT_URL_LIST,
   message: '',
   isSnackbar: false,
-  isDrawer: false,
-  isDialog: false,
-  setAccount: (account: string) => set({ account }), // TODO: if account is not in accountList, add it or throw error or just ignore?
-  addAccount: (account: string) => set(state => ({ account, accountList: [...state.accountList, account] })),
-  deleteAccount: (account: string) => set(state => ({ account: DEFAULT_ACCOUNT, accountList: state.accountList.filter((a) => a !== account) })),
-  setMessage: (message: string) => set({ message }),
+  // TODO: if account is not in accountList, add it or throw error or just ignore?
+  setAccount: (account: string) => set({ account }),
+  addAccount: (account: string) => set(state => ({
+    account,
+    accountList: [...state.accountList, account],
+  })),
+  deleteAccount: (account: string) => set(state => ({
+    account: DEFAULT_ACCOUNT,
+    accountList: state.accountList.filter((a) => a !== account),
+  })),
+  addURL: (url: string) => set(state => ({
+    urlList: [...state.urlList, url],
+  })),
+  deleteURL: (url: string) => set(state => ({
+    urlList: state.urlList.filter((u) => u !== url),
+  })),
+  restoreURLList: () => set({ urlList: DEFAULT_URL_LIST }),
   setSnackbar: (isSnackbar: boolean) => set({ isSnackbar }),
-  showMessage: (message: string) => set({ message, isSnackbar: true, isDrawer: false, isDialog: false }),
-  setDrawer: (isDrawer: boolean) => set({ isDrawer }),
-  setDialog: (isDialog: boolean) => set({ isDialog }),
+  showMessage: (message: string) => set({ message, isSnackbar: true }),
 }), {
   name: 'nostr-keyx',
   version: 1,
   storage: createJSONStorage(() => chromeStorageSync),
-  partialize: (state) => ({ account: state.account, accountList: state.accountList }),
+  partialize: (state) => ({
+    account: state.account,
+    accountList: state.accountList,
+    urlList: state.urlList,
+  }),
 }));
 
 export { useStore };

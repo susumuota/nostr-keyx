@@ -4,17 +4,7 @@
 // https://developer.chrome.com/docs/apps/nativeMessaging/
 // https://dev.classmethod.jp/articles/chrome-native-message/
 
-// NIP-07 API method names.
-// https://github.com/nostr-protocol/nips/blob/master/07.md
-const NIP_07_APIS = ['getPublicKey', 'signEvent', 'getRelays', 'nip04.encrypt', 'nip04.decrypt'];
-
-// account should be set by `popup.tsx`.
-const getAccount = async () => {
-  const nostr_keyx = (await chrome.storage.sync.get('nostr-keyx'))['nostr-keyx'] as string;
-  if (!nostr_keyx) return 'default';
-  const json = JSON.parse(nostr_keyx);
-  return json?.state?.account ?? 'default';
-};
+import { NIP_07_APIS, getAccount, getURLList } from "./common";
 
 const setBadge = (text: string, color: string) => {
   chrome.action.setBadgeText({ text });
@@ -44,71 +34,73 @@ let count = 0;
 
 // receive requests from `content.ts` and send responses to `content.ts`.
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  console.debug('background.ts: onMessage: request', request);
+  (async () => {
+    console.debug('background.ts: onMessage: request', request);
+    console.debug('background.ts: onMessage: sender', sender);
 
-  const send = (response: any) => {
-    (response.error ? console.log : console.debug)('background.ts: onMessage: response', response);
-    if (['signEvent', 'nip04.encrypt', 'nip04.decrypt'].includes(request.method)) count += 1;
-    count = count % 100;
-    response.error ? setBadge('!', 'red') : setBadge(count.toString(), 'white');
-    sendResponse(response);
-  };
+    const send = (response: any) => {
+      (response.error ? console.log : console.debug)('background.ts: onMessage: response', response);
+      if (['signEvent', 'nip04.encrypt', 'nip04.decrypt'].includes(request.method)) count += 1;
+      count = count % 100;
+      response.error ? setBadge('!', 'red') : setBadge(count.toString(), 'white');
+      sendResponse(response);
+    };
 
-  // check request method
-  const { id, method }: { id: string, method: string } = request;
-  if (!(id && NIP_07_APIS.includes(method) || method === 'inject')) {
-    send({ id, result: null, error: 'invalid method' });
-    return true;
-  }
-
-  // inject `inject.ts` to the page (e.g. iris, snort, etc.) to provide `window.nostr`.
-  // TODO: this executeScript will be removed when Chrome 111 is released (it's beta right now).
-  // this is `Method 4` of this post but `Method 5` is rather simple and clean (but requires Chrome 111+).
-  // https://stackoverflow.com/a/9517879
-  if (method === 'inject') {
-    if (!(sender.tab && sender.tab.id)) {
-      send({ id, result: null, error: 'no tab' });
+    // check sender
+    if (!sender.origin) {
+      send({ id: request.id, result: null, error: 'no origin' });
       return true;
     }
-    const tabId = sender.tab.id;
-    (async () => {
-      try {
-        const results = await chrome.scripting.executeScript({
-          target: { tabId }, world: 'MAIN', files: ['inject.js'] // world: 'MAIN' is important
-        });
-        send({ id, result: results, error: null });
-      } catch (err: any) {
-        send({ id, result: null, error: err.toString() });
+    const origin = sender.origin;
+    const urlList = await getURLList();
+    if (!urlList.includes(origin)) {
+      send({ id: request.id, result: null, error: 'invalid origin' });
+      return true;
+    }
+
+    // check request method
+    const { id, method }: { id: string, method: string } = request;
+    if (!(id && NIP_07_APIS.includes(method) || method === 'inject')) {
+      send({ id, result: null, error: 'invalid method' });
+      return true;
+    }
+
+    // inject `inject.ts` to the page (e.g. iris, snort, etc.) to provide `window.nostr`.
+    // TODO: this executeScript will be removed when Chrome 111 is released (it's beta right now).
+    // this is `Method 4` of this post but `Method 5` is rather simple and clean (but requires Chrome 111+).
+    // https://stackoverflow.com/a/9517879
+    if (method === 'inject') {
+      if (!(sender.tab && sender.tab.id)) {
+        send({ id, result: null, error: 'no tab' });
+        return true;
       }
-    })();
-    return true;
-  }
+      const tabId = sender.tab.id;
+      const results = await chrome.scripting.executeScript({
+        target: { tabId }, world: 'MAIN', files: ['inject.js'] // world: 'MAIN' is important
+      });
+      send({ id, result: results, error: null });
+      return true;
+    }
 
+    // send request to `nostr_keyx` native app.
+    // `sendNativeMessage` also work, but it spawns a node process every call, which is very slow.
+    // native port spawns a node process only once, which is much faster.
 
-  // send request to `nostr_keyx` native app.
-  // `sendNativeMessage` also work, but it spawns a node process every call, which is very slow.
-  // native port spawns a node process only once, which is much faster.
+    if (!nativePort) {
+      send({ id, result: null, error: 'no nativePort' });
+      return true;
+    }
 
-  if (!nativePort) {
-    send({ id, result: null, error: 'no nativePort' });
-    return true;
-  }
-
-  try {
     const listener = (response: any) => {
       if (response.id !== id) return;
       nativePort?.onMessage.removeListener(listener);
       send(response);
     };
     nativePort.onMessage.addListener(listener);
-    (async () => {
-      // append account to the request
-      nativePort.postMessage({...request, account: await getAccount()});
-    })();
-  } catch (err: any) {
-    send({ id, result: null, error: err.toString() });
-  }
-
+    // append account to the request
+    nativePort.postMessage({...request, account: await getAccount()});
+    return true;
+  })();
   return true;
 });
 
