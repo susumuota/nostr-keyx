@@ -21,9 +21,8 @@
   "content_scripts": [
     {
       "matches": [
-        "https://iris.to/*",
-        "https://snort.social/*",
-        "http://localhost/*"
+        "https://*/*",
+        "http://*/*"
       ],
       "js": ["content.js"],
       "run_at": "document_start"
@@ -48,8 +47,7 @@
   ],
 
   "host_permissions": [
-    "https://iris.to/*",
-    "https://snort.social/*",
-    "http://localhost/*"
+    "https://*/*",
+    "http://*/*"
   ]
 }

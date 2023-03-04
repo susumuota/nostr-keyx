@@ -2,25 +2,18 @@
 // SPDX-License-Identifier: MIT
 
 import { useCallback, useMemo } from 'react';
-import { AppBar, Box, Button, Container, createTheme, CssBaseline, Link, Paper, ThemeProvider, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, Container, createTheme, CssBaseline, Link, Paper, Snackbar, ThemeProvider, Toolbar, Typography } from '@mui/material';
 
 import { useStore } from './useStore';
 import { AccountSelect } from './AccountSelect';
-import { MessageSnackbar } from './MessageSnackbar';
-import { DeleteDialog } from './DeleteDialog';
-import { NewAccountDrawer } from './NewAccountDrawer';
+import { UrlList } from './UrlList';
 
 function App() {
-  const setDrawer = useStore(state => state.setDrawer);
-  const setDialog = useStore(state => state.setDialog);
+  const message = useStore(state => state.message);
+  const isSnackbar = useStore(state => state.isSnackbar);
+  const setSnackbar = useStore(state => state.setSnackbar);
 
-  const handleNewAccount = useCallback(() => {
-    setDrawer(true);
-  }, []);
-
-  const handleDeleteDialog = useCallback(() => {
-    setDialog(true);
-  }, []);
+  const handleClose = useCallback(() => setSnackbar(false), []);
 
   const theme = useMemo(() => createTheme({
     palette: {
@@ -53,13 +46,12 @@ function App() {
       </AppBar>
       <Container fixed>
         <Paper elevation={6}>
-          <Box p={2} mt={2} mb={2} minWidth={240} minHeight={280}>
-            <Box>
+          <Box p={2} mt={2} mb={2} minWidth={240} minHeight={280} width={240}>
+            <Box mt={1}>
               <AccountSelect />
             </Box>
-            <Box mt={2}>
-              <Button sx={{ mr: 2 }} variant="outlined" onClick={handleNewAccount}>New</Button>
-              <Button variant="outlined" onClick={handleDeleteDialog}>Delete</Button>
+            <Box mt={1}>
+              <UrlList />
             </Box>
             <Box mt={3}>
               <Link mr={1} href="https://github.com/susumuota/nostr-keyx" target="_blank" rel="noreferrer noopener">
@@ -68,9 +60,7 @@ function App() {
             </Box>
           </Box>
         </Paper>
-        <NewAccountDrawer />
-        <DeleteDialog />
-        <MessageSnackbar />
+        <Snackbar open={isSnackbar} message={message} onClose={handleClose} autoHideDuration={2000} />
       </Container>
     </ThemeProvider>
   );

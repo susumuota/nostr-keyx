@@ -127,6 +127,9 @@ cat .\uninstall.ps1  # confirm before you run it
 ## Setup
 
 - Save your private key to the OS's native keychain application.
+- You need to specify the private key with account name and service name to switch between multiple private keys.
+- The default account name must be `default`. You can add other account names, but they must consist of alphanumeric characters, underscores, periods or hyphens.
+- At the moment, the service name must be `nostr-keyx`.
 
 > **Note**: If you need private keys for test, you can generate them with `npm run genkey` (needs source, see option 2 above).
 
