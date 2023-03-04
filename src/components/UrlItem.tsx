@@ -23,9 +23,17 @@ function UrlItem({ url }: { url: string }) {
   const handleOpenDialog = useCallback(() => setDialog(true), []);
   const handleCloseDialog = useCallback(() => setDialog(false), []);
 
+  const sx = {
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    '&:hover': {
+      overflow: 'visible',
+    }
+  }
+
   return (
     <ListItem disablePadding>
-      <ListItemText primary={url} sx={{ overflow: 'hidden' }} />
+      <ListItemText primary={url} sx={sx} />
       <Tooltip title="Delete this URL">
         <IconButton onClick={handleOpenDialog}>
           <Icon>delete</Icon>
