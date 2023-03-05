@@ -4,7 +4,7 @@
 // https://developer.chrome.com/docs/apps/nativeMessaging/
 // https://dev.classmethod.jp/articles/chrome-native-message/
 
-import { NIP_07_APIS, getAccount, getURLList } from "./common";
+import { NIP_07_APIS, getAccount, getURLList } from './common';
 
 const setBadge = (text: string, color: string) => {
   chrome.action.setBadgeText({ text });
@@ -41,7 +41,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     const send = (response: any) => {
       (response.error ? console.log : console.debug)('background.ts: onMessage: response', response);
       if (['signEvent', 'nip04.encrypt', 'nip04.decrypt'].includes(request.method)) count += 1;
-      count = count % 100;
+      count = count % 10;
       response.error ? setBadge('!', 'red') : setBadge(count.toString(), 'white');
       sendResponse(response);
     };

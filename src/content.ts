@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Susumu OTA <1632335+susumuota@users.noreply.github.com>
 // SPDX-License-Identifier: MIT
 
-import { NIP_07_APIS, getURLList } from "./common";
+import { NIP_07_APIS, getURLList } from './common';
 
 // ask `background.ts` to inject `inject.ts` to the page.
 // TODO: this sendMessage will be removed when Chrome 111 is released (it's beta right now).

@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2023 Susumu OTA <1632335+susumuota@users.noreply.github.com>
 // SPDX-License-Identifier: MIT
 
-import { useMemo } from "react";
+import { useMemo } from 'react';
 import { createRoot } from 'react-dom/client';
-import { CssBaseline, AppBar, Toolbar, Typography, Container, Paper, Box, ThemeProvider, createTheme } from "@mui/material";
+import { CssBaseline, AppBar, Toolbar, Typography, Container, Paper, Box, ThemeProvider, createTheme } from '@mui/material';
 
 function App() {
   const theme = useMemo(() => createTheme({
