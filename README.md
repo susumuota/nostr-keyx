@@ -226,29 +226,6 @@ pass insert nostr-keyx/default
 # paste it again
 ```
 
-### Optional: Add web-based Nostr clients
-
-- If you want to add other web-based Nostr clients, open `dist/manifest.json` and add their URLs to `content_scripts.matches` and `host_permissions`.
-
-```json
-  "content_scripts": [
-    {
-      "matches": [
-        "https://iris.to/*",
-        "https://snort.social/*",
-        "http://localhost/*"
-      ],
-      ...
-    }
-  ],
-  ...
-  "host_permissions": [
-    "https://iris.to/*",
-    "https://snort.social/*",
-    "http://localhost/*"
-  ]
-```
-
 ### Test it on Iris or Snort
 
 - Open Chrome and go to `chrome://extensions/`.
