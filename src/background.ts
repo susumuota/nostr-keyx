@@ -36,7 +36,7 @@ let count = 0;
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   (async () => {
     console.debug('background.ts: onMessage: request', request);
-    console.debug('background.ts: onMessage: sender', sender);
+    // console.debug('background.ts: onMessage: sender', sender);
 
     const send = (response: any) => {
       (response.error ? console.log : console.debug)('background.ts: onMessage: response', response);

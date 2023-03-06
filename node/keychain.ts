@@ -52,19 +52,35 @@ const decoder = new TextDecoder();
 
 const isAlphanumeric = (str: string) => /^[a-zA-Z0-9_\.\-]+$/.test(str);
 
+const runCommand = (command: string, args?: readonly string[]) => {
+  try {
+    const p = spawnSync(command, args);
+    if (p.status !== 0) {
+      // log({ status: p.status, stdout: p.stdout.toString().slice(0, 10), stderr: p.stderr.toString().slice(0, 10) });
+      throw new Error('Failed to run command.');
+    }
+    return p.stdout.toString().trim();
+  } catch (err: any) {
+    // log({ 'message': err.toString().slice(0, 10) });
+    throw new Error('Failed to spawnSync.');
+  }
+};
+
 const getBech32PrivateKey = (account: string) => {
   // TODO: needs to add service name to argument?
   if (!isAlphanumeric(account)) throw new Error('Account must be alphanumerics, underscores, dots, or hyphens.');
-  if (process.platform === 'darwin') {
+
+  if (account === 'yubikey') {
+    return runCommand('sh', ['-c', './yubikey.sh']);
+  } else if (process.platform === 'darwin') {
     // see `man 1 security`
-    return spawnSync('security', ['find-generic-password', '-a', account, '-s', SERVICE_NAME, '-w']).stdout.toString().trim();
+    return runCommand('security', ['find-generic-password', '-a', account, '-s', SERVICE_NAME, '-w']);
   } else if (process.platform === 'linux') {
     // TODO: test this on Linux.
     // https://www.passwordstore.org/
-    return spawnSync('pass', [`${SERVICE_NAME}/${account}`]).stdout.toString().trim();
+    return runCommand('pass', [`${SERVICE_NAME}/${account}`]);
   } else if (process.platform === 'win32') {
-    // TODO: test this on Windows.
-    return spawnSync('powershell', ['.\\get_privatekey.ps1', account, SERVICE_NAME]).stdout.toString().trim();
+    return runCommand('powershell', ['.\\get_privatekey.ps1', account, SERVICE_NAME]);
   } else {
     throw new Error('Unsupported platform. See getBech32PrivateKey in keychain.ts.');
   }
@@ -77,6 +93,7 @@ const getPrivateKey = (account: string) => {
   try {
     bech32PrivateKey = getBech32PrivateKey(account);
   } catch (err: any) {
+    // log({ 'message': err.toString().slice(0, 10) });
     throw new Error('Failed to access keychain.');
   }
   if (!bech32PrivateKey) throw new Error('Private key was not found.');
