@@ -12,7 +12,7 @@
     "build-node": "esbuild --bundle --minify --format=esm --platform=node --outdir=dist/macos --out-extension:.js=.mjs node/*.ts ; cp -p dist/macos/*.mjs dist/windows ; cp -p dist/macos/*.mjs dist/linux",
     "build": "rm -rf dist ; cp -rp public dist ; concurrently \"npm:build-*\"",
     "watch-js": "esbuild --watch --bundle --sourcemap=inline --format=esm --outdir=dist/extension src/*.ts src/*.tsx",
-    "watch-node": "esbuild --watch --bundle --sourcemap=inline --format=esm --platform=node --outdir=dist/unix --out-extension:.js=.mjs node/*.ts",
+    "watch-node": "esbuild --watch --bundle --sourcemap=inline --format=esm --platform=node --outdir=dist/macos --out-extension:.js=.mjs node/*.ts",
     "watch": "concurrently \"npm:watch-*\"",
     "pack": "rm -f *.tgz *.zip ; npm pack ; tar tfz *.tgz | sed -e 's|^package/||' | zip -r@ `ls *.tgz | sed -e 's|\\.tgz|\\.zip|'`",
     "genkey": "tsx bin/genkey.ts",
