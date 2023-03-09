@@ -10,9 +10,10 @@ EN |
 [ES](https://github-com.translate.goog/susumuota/nostr-keyx/blob/main/README.md?_x_tr_sl=en&_x_tr_tl=es&_x_tr_hl=es&_x_tr_pto=wapp) |
 [ZH](https://github-com.translate.goog/susumuota/nostr-keyx/blob/main/README.md?_x_tr_sl=en&_x_tr_tl=zh-CN&_x_tr_hl=zh-CN&_x_tr_pto=wapp)
 
-A [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md) browser extension that uses the OS's native keychain application to protect your private keys.
+A [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md) browser extension that uses the OS's native keychain and YubiKey to protect your private keys.
 
 - **OS's native keychain application** support ([macOS](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac), [Windows](https://support.microsoft.com/en-us/windows/accessing-credential-manager-1b5c916a-6a16-889f-8581-fc16e8165ac0), [Linux](https://www.passwordstore.org/))
+- **YubiKey** support
 - Minimal dependencies ([`@noble/secp256k1`](https://github.com/paulmillr/noble-secp256k1) and [`@scure/base`](https://github.com/paulmillr/scure-base))
 - Multiple accounts (private keys) support
 
@@ -226,6 +227,46 @@ pass insert nostr-keyx/default
 # paste it again
 ```
 
+### For YubiKey: Using command `gpg`
+
+- Setup OpenPGP with YubiKey. Follow [this article](https://support.yubico.com/hc/en-us/articles/360013790259-Using-Your-YubiKey-with-OpenPGP).
+- Set the touch policy for encryption to OFF (default is OFF). See details [here](https://docs.yubico.com/software/yubikey/tools/ykman/OpenPGP_Commands.html#ykman-openpgp-keys-set-touch-options-key-policy).
+
+```sh
+ykman openpgp info | grep Enc           # check the current setting, if it's already OFF, skip this step
+ykman openpgp keys set-touch ENC OFF    # change the setting
+ykman openpgp info | grep Enc           # confirm the setting, should be OFF
+```
+
+- Encrypt (and sign) the Nostr private key with gpg and YubiKey.
+
+```sh
+cd /path/to/dist/macos  # or linux
+gpg -sea --default-recipient-self > nostr_privatekey.asc
+# paste the private key, enter, and Ctrl+D
+```
+
+- Try to decrypt it.
+
+```sh
+gpg -d nostr_privatekey.asc
+```
+
+- Unplug YubiKey and try again, it should fail
+
+```sh
+gpg -d nostr_privatekey.asc
+```
+
+- Plug YubiKey again.
+- Run this script.
+
+```sh
+/bin/sh -c ./yubikey.sh 2> /dev/null
+```
+
+- It should decrypt the private key successfully.
+
 ### Test it on Iris or Snort
 
 - Open Chrome and go to `chrome://extensions/`.
@@ -310,6 +351,6 @@ MIT License, see [LICENSE](LICENSE) file.
 
 S. Ota
 
-- nostr: `npub1susumuq8u7v0sp2f5jl3wjuh8hpc3cqe2tc2j5h4gu7ze7z20asq2w0yu8`
+- nostr: [`npub1susumuq8u7v0sp2f5jl3wjuh8hpc3cqe2tc2j5h4gu7ze7z20asq2w0yu8`](https://iris.to/s_ota)
 - GitHub: [susumuota](https://github.com/susumuota)
 - Twitter: [@susumuota](https://twitter.com/susumuota)
