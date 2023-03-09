@@ -304,7 +304,7 @@ await chrome.storage.session.clear();
 
 ## Experimental features
 
-- The popup icon shows the number of API calls accessing the private key (`signEvent`, `encrypt` and `decrypt`). You should keep your eyes on the **growth of this number** in order to monitor the behavior of web-based Nostr clients. The number is reset to zero when it reaches 100 due to space limitations in the popup icon.
+- The popup icon shows the number of API calls accessing the private key (`signEvent`, `encrypt` and `decrypt`). You should keep your eyes on the **growth of this number** in order to monitor the behavior of web-based Nostr clients. The number is reset to zero when it reaches 10 due to space limitations in the popup icon.
 
 ![image](https://user-images.githubusercontent.com/1632335/222151354-57118ef0-f76b-4e7e-acf3-3c1d915acdd6.png)
 
@@ -325,12 +325,14 @@ await chrome.storage.session.clear();
 - [x] GitHub Actions to build and publish the zip file.
 - [x] Add installer script.
 - [x] UI to guide users to install the native messaging host.
+- [x] Add preliminary YubiKey support.
+- [ ] Add biometric authentication support.
 - [ ] Add a stats page to show the number of API calls accessing the private key.
 - [ ] Support [NIP-46](https://github.com/nostr-protocol/nips/blob/master/46.md).
 - [ ] Better error handling.
 - [ ] Test `relays`.
 - [ ] Chrome Web Store?
-- [ ] Add YubiKey support. At the moment, it looks hard. Related information: [here](https://support.yubico.com/hc/en-us/articles/360016649139-YubiKey-5-2-Enhancements-to-OpenPGP-3-4-Support), [here](https://bitcoindev.network/using-gpg-as-a-bitcoin-address/) and [here](https://github.com/Yubico/yubico-piv-tool/issues/405#issuecomment-1289079879).
+- [ ] Add YubiKey native support. At the moment, it looks hard. Related information: [here](https://support.yubico.com/hc/en-us/articles/360016649139-YubiKey-5-2-Enhancements-to-OpenPGP-3-4-Support), [here](https://bitcoindev.network/using-gpg-as-a-bitcoin-address/) and [here](https://github.com/Yubico/yubico-piv-tool/issues/405#issuecomment-1289079879).
 
 ## Source code
 
