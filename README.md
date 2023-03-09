@@ -10,16 +10,15 @@ EN |
 [ES](https://github-com.translate.goog/susumuota/nostr-keyx/blob/main/README.md?_x_tr_sl=en&_x_tr_tl=es&_x_tr_hl=es&_x_tr_pto=wapp) |
 [ZH](https://github-com.translate.goog/susumuota/nostr-keyx/blob/main/README.md?_x_tr_sl=en&_x_tr_tl=zh-CN&_x_tr_hl=zh-CN&_x_tr_pto=wapp)
 
-A [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md) browser extension that uses the OS's native keychain and YubiKey to protect your private keys.
+A [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md) browser extension that uses the OS's keychain or YubiKey to protect your private keys.
 
 - **OS's native keychain application** support ([macOS](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac), [Windows](https://support.microsoft.com/en-us/windows/accessing-credential-manager-1b5c916a-6a16-889f-8581-fc16e8165ac0), [Linux](https://www.passwordstore.org/))
-- **YubiKey** support
+- **YubiKey OpenPGP** support ([YubiKey 5 Series](https://www.yubico.com/products/yubikey-5-overview/))
 - Minimal dependencies ([`@noble/secp256k1`](https://github.com/paulmillr/noble-secp256k1) and [`@scure/base`](https://github.com/paulmillr/scure-base))
-- Multiple accounts (private keys) support
 
 ![keychain](https://user-images.githubusercontent.com/1632335/221407817-bc4ecd58-da53-4b39-8ec0-59270eee6af9.png)
 
-There are already great extensions like [nos2x](https://github.com/fiatjaf/nos2x) or [Alby](https://getalby.com/) for [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md). Unlike these existing extensions, `nostr-keyx` uses the **OS's native keychain application** (e.g. [Keychain Access](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac) on MacOS) to store your private key instead of the web browser's local storage. In addition, all of the [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md) functions (`signEvent`, `encrypt`, `decrypt`, etc.) are executed outside of the web browser's memory. So it might be less risky than other extensions. I hope this extension helps you too.
+There are already great extensions like [nos2x](https://github.com/fiatjaf/nos2x) or [Alby](https://getalby.com/) for [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md). Unlike these existing extensions, `nostr-keyx` uses the **OS's native keychain application** or **YubiKey** to store your private key instead of the web browser's local storage. Your private keys are encrypted by the operating system or by YubiKey. In addition, all of the [NIP-07](https://github.com/nostr-protocol/nips/blob/master/07.md) functions (`signEvent`, `encrypt`, `decrypt`, etc.) are executed outside of the web browser's memory. So it might be less risky than other extensions. I hope this extension helps you too.
 
 ## Download
 
@@ -266,6 +265,7 @@ gpg -d nostr_privatekey.asc
 ```
 
 - It should decrypt the private key successfully.
+- Don't forget to add an account `yubikey` on extension popup settings. See `Usage` section below.
 
 ### Test it on Iris or Snort
 
@@ -293,11 +293,14 @@ await chrome.storage.session.clear();
 
 - You can change account (private key) by popup UI of the extension.
 
-![popup](https://user-images.githubusercontent.com/1632335/221406523-67dd7320-332a-4f5e-8bb2-6b9a8d088a43.png)
+![popup](https://user-images.githubusercontent.com/1632335/223989267-66c7c8c6-1ade-43dc-ad78-a0747424d8e6.png)
 
-- You can add an account. This account name must match the account name in the OS Keychain application. e.g. `default`, `bot`, `test`, etc.
-- Press `NEW` button and enter your account name, then press `ADD`.
+- You can add an account. This account name must match the account name in the OS Keychain application. e.g. `default`, `yubikey`, `bot`, etc.
+- To use YubiKey, you need to add an account `yubikey`.
+- Press `+` button and enter your account name, then press `ADD`.
 - You can switch accounts by selecting list items on the popup UI.
+- You can also add a URL to allow the web page to use the extension.
+- Press `+` button and enter a new URL, then press `ADD`.
 
 ## Experimental features
 
