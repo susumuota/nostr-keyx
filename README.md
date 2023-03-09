@@ -326,7 +326,7 @@ await chrome.storage.session.clear();
 - [x] Add installer script.
 - [x] UI to guide users to install the native messaging host.
 - [x] Add preliminary YubiKey support.
-- [ ] Add biometric authentication support.
+- [ ] Add biometric authentication support. e.g. fingerprint sensor for MacBook Pro.
 - [ ] Add a stats page to show the number of API calls accessing the private key.
 - [ ] Support [NIP-46](https://github.com/nostr-protocol/nips/blob/master/46.md).
 - [ ] Better error handling.
