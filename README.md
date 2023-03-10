@@ -293,7 +293,7 @@ await chrome.storage.session.clear();
 
 - You can change account (private key) by popup UI of the extension.
 
-![popup](https://user-images.githubusercontent.com/1632335/223989267-66c7c8c6-1ade-43dc-ad78-a0747424d8e6.png)
+![popup](https://user-images.githubusercontent.com/1632335/224256295-9629952f-4596-4c65-9166-09b3c73f7279.png)
 
 - You can add an account. This account name must match the account name in the OS Keychain application. e.g. `default`, `yubikey`, `bot`, etc.
 - To use YubiKey, you need to add an account `yubikey`.
