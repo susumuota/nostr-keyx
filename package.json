@@ -37,6 +37,8 @@
   },
   "homepage": "https://github.com/susumuota/nostr-keyx#readme",
   "devDependencies": {
+    "@scure/bip32": "^1.1.5",
+    "@scure/bip39": "^1.1.1",
     "@tsconfig/node-lts-strictest-esm": "^18.12.1",
     "@types/chrome": "^0.0.220",
     "@types/react": "^18.0.28",
