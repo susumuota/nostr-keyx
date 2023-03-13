@@ -11,6 +11,7 @@ import { wordlist as japanese_wordlist } from '@scure/bip39/wordlists/japanese';
 
 // https://github.com/nostr-protocol/nips/blob/master/19.md
 // https://github.com/nbd-wtf/nostr-tools/blob/master/nip19.ts
+// https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki
 
 const BECH32_MAX_SIZE = 5000;
 
