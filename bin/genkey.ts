@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: 2023 Susumu OTA <1632335+susumuota@users.noreply.github.com>
 // SPDX-License-Identifier: MIT
 
-// Usage: npx tsx bin/genkey.ts
-
 import { parseArgs } from 'node:util';
 
 import * as secp from '@noble/secp256k1';
@@ -30,9 +28,9 @@ const bech32ToHex = (bech32str: string) => {
 };
 
 const mnemonicToPrivateKey = (mnemonic: string, wordlist: string[]) => {
+  if (!bip39.validateMnemonic(mnemonic, wordlist)) throw new Error('Invalid mnemonic');
   const entropy = bip39.mnemonicToEntropy(mnemonic, wordlist);
-  console.assert(bip39.entropyToMnemonic(entropy, wordlist) === mnemonic);
-  console.assert(bip39.validateMnemonic(mnemonic, wordlist));
+  if (bip39.entropyToMnemonic(entropy, wordlist) !== mnemonic) throw new Error('Invalid mnemonic');
   const masterKey = HDKey.fromMasterSeed(entropy);
   const newKey = masterKey.derive(DERIVATION_PATH);
   if (!newKey.privateKey) throw new Error('Invalid key derivation');
@@ -52,12 +50,13 @@ const generateKeys = (privateKey: string) => {
 
 const showHelp = () => {
   console.log(`
-Usage: genkey [-h] [-l language] [-p pattern]
+Usage: genkey [-h] [-l language] [-p pattern] [-m mnemonic]
 
 Options:
   -h, --help      Show this help message and exit.
   -l, --language  Language of the wordlist for mnemonic (en or ja). default: en.
-  -p, --pattern   Regular expression to match the npub.
+  -p, --pattern   Generate keys with regular expression to match the npub.
+  -m, --mnemonic  Recover keys from mnemonic phrase.
 `);
 };
 
@@ -65,13 +64,15 @@ type Options = {
   help: boolean;
   language: string;
   pattern: string;
+  mnemonic: string;
 };
 
-const { values: { help, language, pattern } } = parseArgs({
+const { values: { help, language, pattern, mnemonic } } = parseArgs({
   options: {
     'help': { type: 'boolean', short: 'h', default: false },
     'language': { type: 'string', short: 'l', default: 'en' },
     'pattern': { type: 'string', short: 'p', default: '' },
+    'mnemonic': { type: 'string', short: 'm', default: '' },
   },
 }) as { values: Options };
 
@@ -81,6 +82,13 @@ if (help || (!language)) {
 }
 
 const wordlist = (language === 'ja') ? japanese_wordlist : english_wordlist;
+
+if (mnemonic) {
+  const privateKey = mnemonicToPrivateKey(mnemonic, wordlist);
+  const keys = generateKeys(privateKey);
+  console.log({ mnemonic, ...keys });
+  process.exit(0);
+}
 
 while (true) {
   const mnemonic = bip39.generateMnemonic(wordlist, 256);
