@@ -80,7 +80,7 @@ function UrlList() {
         </Tooltip>
       </Box>
       <NewItemDrawer
-        title="Enter a new URL. It must be origin, e.g. https://example.com"
+        title="Enter a new URL."
         label="New URL"
         open={isDrawer}
         onClick={handleNewURL}

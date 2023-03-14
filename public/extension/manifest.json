@@ -2,7 +2,7 @@
   "manifest_version": 3,
 
   "name": "nostr-keyx",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "A NIP-07 browser extension that uses the OS's keychain or YubiKey to protect your private keys.",
   "author": "Susumu OTA",
   "homepage_url": "https://github.com/susumuota/nostr-keyx",
@@ -26,6 +26,15 @@
       ],
       "js": ["content.js"],
       "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://*/*",
+        "http://*/*"
+      ],
+      "world": "MAIN",
+      "js": ["inject.js"],
+      "run_at": "document_start"
     }
   ],
 
@@ -42,12 +51,6 @@
 
   "permissions": [
     "nativeMessaging",
-    "scripting",
     "storage"
-  ],
-
-  "host_permissions": [
-    "https://*/*",
-    "http://*/*"
   ]
 }
