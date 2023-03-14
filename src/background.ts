@@ -14,10 +14,6 @@ const setBadge = (text: string, color: string) => {
 // connect to `nostr_keyx` native messaging host.
 let nativePort: chrome.runtime.Port | null;
 nativePort = chrome.runtime.connectNative('io.github.susumuota.nostr_keyx');
-if (chrome.runtime.lastError) { // TODO: never happens?
-  console.log('background.ts: connectNative:', chrome.runtime.lastError.message);
-  setBadge('!', 'red');
-}
 
 // if `nostr_keyx` native app is not installed, show error message and set badge color to red.
 nativePort.onDisconnect.addListener(() => {
@@ -46,51 +42,29 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       sendResponse(response);
     };
 
-    // check sender
-    if (!sender.origin) {
-      send({ id: request.id, result: null, error: 'no origin' });
-      return true;
-    }
-    const origin = sender.origin;
-    const urlList = await getURLList();
-    if (!urlList.includes(origin)) {
-      send({ id: request.id, result: null, error: 'invalid origin' });
-      return true;
-    }
-
     // check request method
     const { id, method }: { id: string, method: string } = request;
-    if (!(id && NIP_07_APIS.includes(method) || method === 'inject')) {
+    if (!(id && NIP_07_APIS.includes(method))) {
       send({ id, result: null, error: 'invalid method' });
       return true;
     }
 
-    // inject `inject.ts` to the page (e.g. iris, snort, etc.) to provide `window.nostr`.
-    // TODO: this executeScript will be removed when Chrome 111 is released (it's beta right now).
-    // this is `Method 4` of this post but `Method 5` is rather simple and clean (but requires Chrome 111+).
-    // https://stackoverflow.com/a/9517879
-    if (method === 'inject') {
-      if (!(sender.tab && sender.tab.id)) {
-        send({ id, result: null, error: 'no tab' });
-        return true;
-      }
-      const tabId = sender.tab.id;
-      const results = await chrome.scripting.executeScript({
-        target: { tabId }, world: 'MAIN', files: ['inject.js'] // world: 'MAIN' is important
-      });
-      send({ id, result: results, error: null });
+    // check sender
+    if (!sender.origin) {
+      send({ id, result: null, error: 'no origin' });
+      return true;
+    }
+    const urlList = await getURLList();
+    if (!urlList.includes(sender.origin)) {
+      send({ id, result: null, error: 'invalid origin' });
       return true;
     }
 
     // send request to `nostr_keyx` native app.
-    // `sendNativeMessage` also work, but it spawns a node process every call, which is very slow.
-    // native port spawns a node process only once, which is much faster.
-
     if (!nativePort) {
       send({ id, result: null, error: 'no nativePort' });
       return true;
     }
-
     const listener = (response: any) => {
       if (response.id !== id) return;
       nativePort?.onMessage.removeListener(listener);
