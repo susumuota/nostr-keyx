@@ -237,6 +237,12 @@ ykman openpgp keys set-touch ENC OFF    # change the setting
 ykman openpgp info | grep Enc           # confirm the setting, should be OFF
 ```
 
+- Install `pinentry-mac` (for macOS) or GUI-based `pinentry` (for Linux).
+
+```sh
+brew install pinentry-mac
+```
+
 - Encrypt (and sign) the Nostr private key with gpg and YubiKey.
 
 ```sh
