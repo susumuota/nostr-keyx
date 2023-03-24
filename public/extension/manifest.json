@@ -51,6 +51,7 @@
 
   "permissions": [
     "nativeMessaging",
-    "storage"
+    "storage",
+    "tabs"
   ]
 }
