@@ -57,6 +57,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     const urlList = await getURLList();
     if (!urlList.includes(sender.origin)) {
       send({ id, result: null, error: 'invalid origin' });
+      const sp = new URLSearchParams({ origin: sender.origin });
+      const url = `prompt.html?${sp.toString()}`;
+      const absUrl = `chrome-extension://${chrome.runtime.id}/${url}`;
+      // check if the tab is already opened
+      const [tab] = await chrome.tabs.query({ url: absUrl });
+      if (tab && tab.id) {
+        // TODO: this might be annoying if the nostr client keeps sending requests.
+        // await chrome.tabs.update(tab.id, { active: true });
+        return true;
+      }
+      await chrome.tabs.create({ url });
       return true;
     }
 

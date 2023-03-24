@@ -6,7 +6,7 @@
 const NIP_07_APIS = ['getPublicKey', 'signEvent', 'getRelays', 'nip04.encrypt', 'nip04.decrypt'];
 
 const DEFAULT_ACCOUNT = 'default';
-const DEFAULT_URL_LIST = ['https://iris.to', 'https://snort.social', 'http://localhost'];
+const DEFAULT_URL_LIST = ['https://snort.social', 'https://iris.to', 'https://app.coracle.social'];
 
 const getAccount = async () => {
   const nostr_keyx = (await chrome.storage.sync.get('nostr-keyx'))['nostr-keyx'] as string;

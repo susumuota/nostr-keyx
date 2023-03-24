@@ -19,7 +19,6 @@ function App() {
   const typographySx = {
     m: 'auto',
     mt: 1.2,
-    flexGrow: 1,
     color: 'primary.contrastText',
     fontFamily: '"Bowlby One SC", "Roboto", sans-serif',
   };
@@ -32,24 +31,24 @@ function App() {
           <Typography variant="h4" sx={typographySx}>Nostr-KeyX</Typography>
         </Toolbar>
       </AppBar>
-      <Box sx={{ maxHeight: '100%', overflow: 'auto' }}>
-        <Container maxWidth={false}>
-          <Paper elevation={6}>
-            <Box p={2} mt={2} mb={2}>
-              <div>
-                Hi! Thank you for installing nostr-keyx!
-              </div>
-              <div>
-                Follow the <a href="https://github.com/susumuota/nostr-keyx#download">README.md</a> on GitHub to set up the native scripts (except for the `Install Chrome extension` section, as you have already installed the extension).
-              </div>
+      <Container fixed>
+        <Paper elevation={6}>
+          <Box p={2} mt={2} mb={2}>
+            <Box>
+              Hi! Thank you for installing nostr-keyx!
             </Box>
-          </Paper>
-        </Container>
-      </Box>
+            <Box>
+              Follow the <a href="https://github.com/susumuota/nostr-keyx#install">instructions</a> on GitHub to set up the native scripts.
+            </Box>
+          </Box>
+        </Paper>
+      </Container>
     </ThemeProvider>
   );
 }
 
 const container = document.getElementById('app');
-const root = createRoot(container!);
-root.render(<App />);
+if (container) {
+  const root = createRoot(container);
+  root.render(<App />);
+}
