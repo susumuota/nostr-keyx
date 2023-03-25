@@ -28,7 +28,9 @@ import path from 'node:path';
 import process from 'node:process';
 import crypto from 'node:crypto';
 
-import * as secp from '@noble/secp256k1';
+import { secp256k1, schnorr } from '@noble/curves/secp256k1';
+import * as utils from '@noble/curves/abstract/utils';
+import { sha256 } from '@noble/hashes/sha256';
 import { bech32, base64 } from '@scure/base';
 
 
@@ -100,7 +102,7 @@ const getPrivateKey = (account: string) => {
   if (bech32PrivateKey.length !== 63) throw new Error('Invalid private key length. It should be 63 characters.');
   try {
     const { words } = bech32.decode(bech32PrivateKey, BECH32_MAX_SIZE);
-    return secp.utils.bytesToHex(bech32.fromWords(words));
+    return utils.bytesToHex(bech32.fromWords(words));
   } catch (err: any) {
     throw new Error('Failed to bech32 decode private key.');
   }
@@ -112,7 +114,7 @@ const getPublicKey = (account: string) => {
   if (publicKeyCache.has(account)) return publicKeyCache.get(account);
   const privateKey = getPrivateKey(account);
   try {
-    const publicKey = secp.utils.bytesToHex(secp.schnorr.getPublicKey(privateKey));
+    const publicKey = utils.bytesToHex(schnorr.getPublicKey(privateKey));
     publicKeyCache.set(account, publicKey);
     return publicKey;
   } catch (err: any) {
@@ -124,7 +126,7 @@ const getPublicKey = (account: string) => {
 // https://github.com/nostr-protocol/nips/blob/master/04.md
 // https://github.com/nbd-wtf/nostr-tools/blob/master/nip04.ts
 const nip04encrypt = async (privkey: string, pubkey: string, text: string) => {
-  const key = secp.getSharedSecret(privkey, '02' + pubkey);
+  const key = secp256k1.getSharedSecret(privkey, '02' + pubkey);
   const normalizedKey = key.slice(1, 33);
   const iv = Uint8Array.from(crypto.getRandomValues(new Uint8Array(16)));
   const plaintext = encoder.encode(text);
@@ -145,7 +147,7 @@ const nip04encrypt = async (privkey: string, pubkey: string, text: string) => {
 const nip04decrypt = async (privkey: string, pubkey: string, data: string) => {
   const [ctb64, ivb64] = data.split('?iv=');
   if (!ctb64 || !ivb64) throw new Error('invalid data');
-  const key = secp.getSharedSecret(privkey, '02' + pubkey)
+  const key = secp256k1.getSharedSecret(privkey, '02' + pubkey)
   const normalizedKey = key.slice(1, 33);
   const cryptoKey = await crypto.subtle.importKey(
     'raw', normalizedKey, { name: 'AES-CBC' }, false, ['decrypt']
@@ -199,10 +201,10 @@ const handleMessage = async (request: any) => {
       event.pubkey = event.pubkey ?? getPublicKey(account);
       if (!event.id) {
         const json = JSON.stringify([0, event.pubkey, event.created_at, event.kind, event.tags, event.content]);
-        event.id = secp.utils.bytesToHex(await secp.utils.sha256(encoder.encode(json)));
+        event.id = utils.bytesToHex(sha256(encoder.encode(json)));
       }
-      event.sig = secp.utils.bytesToHex(await secp.schnorr.sign(event.id, getPrivateKey(account)));
-      // console.assert(await secp.schnorr.verify(event.sig, event.id, event.pubkey));
+      event.sig = utils.bytesToHex(schnorr.sign(event.id, getPrivateKey(account)));
+      // console.assert(schnorr.verify(event.sig, event.id, event.pubkey));
       sendMessage({ id, result: event, error: null });
     } else if (method === 'getRelays') {
       sendMessage({ id, result: {}, error: null }) // TODO: implement relays
