@@ -228,15 +228,7 @@ pass insert nostr-keyx/default
 
 ### For YubiKey: Using command `gpg`
 
-- Setup OpenPGP with YubiKey. Follow [this article](https://support.yubico.com/hc/en-us/articles/360013790259-Using-Your-YubiKey-with-OpenPGP).
-- Set the touch policy for encryption to OFF (default is OFF). See details [here](https://docs.yubico.com/software/yubikey/tools/ykman/OpenPGP_Commands.html#ykman-openpgp-keys-set-touch-options-key-policy).
-
-```sh
-ykman openpgp info | grep Enc           # check the current setting, if it's already OFF, skip this step
-ykman openpgp keys set-touch ENC OFF    # change the setting
-ykman openpgp info | grep Enc           # confirm the setting, should be OFF
-```
-
+- Setup OpenPGP with YubiKey. Follow [my setup memo](https://github.com/susumuota/yubikey-setup#generate-gpg-keys) or [this article](https://support.yubico.com/hc/en-us/articles/360013790259-Using-Your-YubiKey-with-OpenPGP).
 - Install `pinentry-mac` (for macOS) or GUI-based `pinentry` (for Linux).
 
 ```sh
@@ -264,7 +256,7 @@ gpg -d nostr_privatekey.asc
 ```
 
 - Plug YubiKey again.
-- Run this script.
+- Run `yubikey.sh` script.
 
 ```sh
 /bin/sh -c ./yubikey.sh 2> /dev/null
