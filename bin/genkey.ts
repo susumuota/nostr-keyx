@@ -3,7 +3,8 @@
 
 import { parseArgs } from 'node:util';
 
-import * as secp from '@noble/secp256k1';
+import { secp256k1, schnorr } from '@noble/curves/secp256k1';
+import * as utils from '@noble/curves/abstract/utils';
 import { bech32 } from '@scure/base';
 import * as bip39 from '@scure/bip39';
 import { HDKey } from '@scure/bip32';
@@ -19,12 +20,12 @@ const BECH32_MAX_SIZE = 5000;
 const DERIVATION_PATH = "m/44'/1237'/0'/0/0";
 
 const hexToBech32 = (prefix: string, hexstr: string) => (
-  bech32.encode(prefix, bech32.toWords(secp.utils.hexToBytes(hexstr)), BECH32_MAX_SIZE)
+  bech32.encode(prefix, bech32.toWords(utils.hexToBytes(hexstr)), BECH32_MAX_SIZE)
 );
 
 const bech32ToHex = (bech32str: string) => {
   const { prefix, words } = bech32.decode(bech32str, BECH32_MAX_SIZE);
-  return { type: prefix, data: secp.utils.bytesToHex(bech32.fromWords(words)) };
+  return { type: prefix, data: utils.bytesToHex(bech32.fromWords(words)) };
 };
 
 const mnemonicToPrivateKey = (mnemonic: string, wordlist: string[]) => {
@@ -34,13 +35,13 @@ const mnemonicToPrivateKey = (mnemonic: string, wordlist: string[]) => {
   const masterKey = HDKey.fromMasterSeed(entropy);
   const newKey = masterKey.derive(DERIVATION_PATH);
   if (!newKey.privateKey) throw new Error('Invalid key derivation');
-  const privateKey = secp.utils.bytesToHex(newKey.privateKey);
+  const privateKey = utils.bytesToHex(newKey.privateKey);
   return privateKey;
 }
 
 const generateKeys = (privateKey: string) => {
   // const privateKey = secp.utils.bytesToHex(secp.utils.randomPrivateKey());
-  const publicKey = secp.utils.bytesToHex(secp.schnorr.getPublicKey(privateKey));
+  const publicKey = utils.bytesToHex(schnorr.getPublicKey(privateKey));
   const nsec = hexToBech32('nsec', privateKey);
   const npub = hexToBech32('npub', publicKey);
   console.assert(bech32ToHex(nsec).data === privateKey);
@@ -86,7 +87,7 @@ const wordlist = (language === 'ja') ? japanese_wordlist : english_wordlist;
 if (mnemonic) {
   const privateKey = mnemonicToPrivateKey(mnemonic, wordlist);
   const keys = generateKeys(privateKey);
-  console.log({ mnemonic, ...keys });
+  console.log({ nip06mnemonic: mnemonic, ...keys });
   process.exit(0);
 }
 
@@ -95,7 +96,7 @@ while (true) {
   const privateKey = mnemonicToPrivateKey(mnemonic, wordlist);
   const keys = generateKeys(privateKey);
   if (keys.npub.match(pattern)) {
-    console.log({ mnemonic, ...keys });
+    console.log({ nip06mnemonic: mnemonic, ...keys });
     break;
   }
 }

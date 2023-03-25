@@ -3,7 +3,7 @@
 
 import { parseArgs } from 'node:util';
 
-import * as secp from '@noble/secp256k1';
+import * as utils from '@noble/curves/abstract/utils';
 import { bech32 } from '@scure/base';
 import * as bip39 from '@scure/bip39';
 import { wordlist as english_wordlist } from '@scure/bip39/wordlists/english';
@@ -16,12 +16,12 @@ import { wordlist as japanese_wordlist } from '@scure/bip39/wordlists/japanese';
 const BECH32_MAX_SIZE = 5000;
 
 const hexToBech32 = (prefix: string, hexstr: string) => (
-  bech32.encode(prefix, bech32.toWords(secp.utils.hexToBytes(hexstr)), BECH32_MAX_SIZE)
+  bech32.encode(prefix, bech32.toWords(utils.hexToBytes(hexstr)), BECH32_MAX_SIZE)
 );
 
 const bech32ToHex = (bech32str: string) => {
   const { prefix, words } = bech32.decode(bech32str, BECH32_MAX_SIZE);
-  return { type: prefix, data: secp.utils.bytesToHex(bech32.fromWords(words)) };
+  return { type: prefix, data: utils.bytesToHex(bech32.fromWords(words)) };
 };
 
 const showHelp = () => {
@@ -66,17 +66,17 @@ const wordlist = (language === 'ja') ? japanese_wordlist : english_wordlist;
 
 if (npub) {
   const { type, data } = bech32ToHex(npub);
-  const entropy = secp.utils.hexToBytes(data);
+  const entropy = utils.hexToBytes(data);
   const bip39mnemonic = bip39.entropyToMnemonic(entropy, wordlist);
   console.log({ type, npub, hex: data, bip39mnemonic });
 } else if (hex) {
   const npub = hexToBech32(type, hex);
-  const entropy = secp.utils.hexToBytes(hex);
+  const entropy = utils.hexToBytes(hex);
   const bip39mnemonic = bip39.entropyToMnemonic(entropy, wordlist);
   console.log({ type, npub, hex, bip39mnemonic });
 } else if (bip39mnemonic) {
   const entropy = bip39.mnemonicToEntropy(bip39mnemonic, wordlist);
-  const hex = secp.utils.bytesToHex(entropy);
+  const hex = utils.bytesToHex(entropy);
   const npub = hexToBech32(type, hex);
   console.log({ type, npub, hex, bip39mnemonic });
 }
