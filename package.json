@@ -41,6 +41,7 @@
     "@scure/bip39": "^1.2.0",
     "@tsconfig/node-lts-strictest-esm": "^18.12.1",
     "@types/chrome": "^0.0.225",
+    "@types/node": "^18.15.9",
     "@types/react": "^18.0.29",
     "@types/react-dom": "^18.0.10",
     "concurrently": "^7.6.0",
