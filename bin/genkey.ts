@@ -3,7 +3,7 @@
 
 import { parseArgs } from 'node:util';
 
-import { secp256k1, schnorr } from '@noble/curves/secp256k1';
+import { schnorr } from '@noble/curves/secp256k1';
 import * as utils from '@noble/curves/abstract/utils';
 import { bech32 } from '@scure/base';
 import * as bip39 from '@scure/bip39';
