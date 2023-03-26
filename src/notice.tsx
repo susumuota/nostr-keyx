@@ -38,7 +38,10 @@ function App() {
               Hi! Thank you for installing nostr-keyx!
             </Box>
             <Box>
-              Follow the <a href="https://github.com/susumuota/nostr-keyx#install">instructions</a> on GitHub to set up the native scripts.
+              Please follow the <a href="https://github.com/susumuota/nostr-keyx#install">instructions</a> on GitHub to set up the native scripts.
+            </Box>
+            <Box>
+              Before you go, copy the extension ID <strong>{chrome.runtime.id}</strong> to your clipboard. We will use it later.
             </Box>
           </Box>
         </Paper>
