@@ -4,7 +4,7 @@
 // https://developer.chrome.com/docs/apps/nativeMessaging/
 // https://dev.classmethod.jp/articles/chrome-native-message/
 
-import { NIP_07_APIS, getAccount, getURLList } from './common';
+import { Relay, NIP07Relay, NIP_07_APIS, getAccount, getURLList, getRelayList } from './common';
 
 const setBadge = (text: string, color: string) => {
   chrome.action.setBadgeText({ text });
@@ -68,6 +68,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         return true;
       }
       await chrome.tabs.create({ url });
+      return true;
+    }
+
+    // handle only `getRelays` method
+    if (method === 'getRelays') {
+      const relayList = await getRelayList();
+      const relays: NIP07Relay = {};
+      relayList.forEach((r: Relay) => {
+        relays[r.url] = { read: r.policy.read, write: r.policy.write };
+      });
+      send({ id, result: relays, error: null });
       return true;
     }
 

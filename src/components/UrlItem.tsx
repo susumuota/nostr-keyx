@@ -29,7 +29,7 @@ function UrlItem({ url }: { url: string }) {
     '&:hover': {
       overflow: 'visible',
     }
-  }
+  };
 
   return (
     <ListItem disablePadding>
