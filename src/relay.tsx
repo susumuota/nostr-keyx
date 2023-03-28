@@ -3,10 +3,10 @@
 
 import { createRoot } from 'react-dom/client';
 
-import { Popup } from './components/Popup';
+import { RelayPage } from './components/RelayPage';
 
 const container = document.getElementById('app');
 if (container) {
   const root = createRoot(container);
-  root.render(<Popup />);
+  root.render(<RelayPage />);
 }

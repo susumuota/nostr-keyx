@@ -60,7 +60,7 @@ function UrlList() {
 
   return (
     <Box>
-      <Typography variant="inherit">URL List</Typography>
+      <Typography variant="inherit">NIP-07 Allow List</Typography>
       <List>
         <Divider />
         {urlList.map((url, index) => <UrlItem key={index} url={url} />)}

@@ -2,13 +2,12 @@
 // SPDX-License-Identifier: MIT
 
 import { useCallback, useMemo } from 'react';
-import { AppBar, Box, Container, createTheme, CssBaseline, Link, Paper, Snackbar, ThemeProvider, Toolbar, Typography } from '@mui/material';
+import { CssBaseline, AppBar, Toolbar, Typography, Container, Paper, Box, ThemeProvider, createTheme, Snackbar } from '@mui/material';
 
 import { useStore } from './useStore';
-import { AccountSelect } from './AccountSelect';
-import { UrlList } from './UrlList';
+import { RelayList } from './RelayList';
 
-function App() {
+function RelayPage() {
   const message = useStore(state => state.message);
   const isSnackbar = useStore(state => state.isSnackbar);
   const setSnackbar = useStore(state => state.setSnackbar);
@@ -46,24 +45,14 @@ function App() {
       </AppBar>
       <Container fixed>
         <Paper elevation={6}>
-          <Box p={2} mt={2} mb={2} minWidth={240} minHeight={280} width={240}>
-            <Box mt={1}>
-              <AccountSelect />
-            </Box>
-            <Box mt={1}>
-              <UrlList />
-            </Box>
-            <Box mt={3}>
-              <Link mr={1} href="https://github.com/susumuota/nostr-keyx" target="_blank" rel="noreferrer noopener">
-                <img src="icons/github32.png" alt="GitHub" />
-              </Link>
-            </Box>
+          <Box p={2} mt={2} mb={2}>
+            <RelayList />
           </Box>
         </Paper>
-        <Snackbar open={isSnackbar} message={message} onClose={handleClose} autoHideDuration={2000} />
+        <Snackbar open={isSnackbar} message={message} onClose={handleClose} autoHideDuration={5000} />
       </Container>
     </ThemeProvider>
   );
 }
 
-export { App };
+export { RelayPage };
