@@ -35,7 +35,7 @@ There are already great extensions like [nos2x](https://github.com/fiatjaf/nos2x
 
 ```sh
 # install latest stable version of Node.js
-node -v  # I have tested on v18.14.2
+node -v  # I have tested on v18.16.0
 git clone https://github.com/susumuota/nostr-keyx.git
 cd nostr-keyx
 npm ci
