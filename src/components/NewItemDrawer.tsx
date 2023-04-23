@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: 2023 Susumu OTA <1632335+susumuota@users.noreply.github.com>
 // SPDX-License-Identifier: MIT
 
-import { ChangeEvent, useCallback, useState } from 'react';
+import type { ChangeEvent } from 'react';
+import { useCallback, useState } from 'react';
 import { Box, Button, Container, Drawer, Paper, TextField } from '@mui/material';
 
 type NewItemDrawerProps = {

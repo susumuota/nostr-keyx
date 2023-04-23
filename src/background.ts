@@ -4,7 +4,8 @@
 // https://developer.chrome.com/docs/apps/nativeMessaging/
 // https://dev.classmethod.jp/articles/chrome-native-message/
 
-import { Relay, NIP07Relay, NIP_07_APIS, getAccount, getURLList, getRelayList } from './common';
+import type { Relay, NIP07Relay } from './common';
+import { NIP_07_APIS, getAccount, getURLList, getRelayList } from './common';
 
 const setBadge = (text: string, color: string) => {
   chrome.action.setBadgeText({ text });
