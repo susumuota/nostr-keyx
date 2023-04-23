@@ -146,9 +146,8 @@ const getRelayList = async () => {
   return json?.state?.relayList as Relay[] ?? DEFAULT_RELAY_LIST;
 };
 
+export type { Relay, NIP07Relay };
 export {
-  Relay,
-  NIP07Relay,
   NIP_07_APIS,
   DEFAULT_ACCOUNT,
   DEFAULT_URL_LIST,

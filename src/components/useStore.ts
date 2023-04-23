@@ -2,9 +2,11 @@
 // SPDX-License-Identifier: MIT
 
 import { create } from 'zustand';
-import { persist, createJSONStorage, StateStorage } from 'zustand/middleware'
+import type { StateStorage } from 'zustand/middleware'
+import { persist, createJSONStorage } from 'zustand/middleware'
 
-import { Relay, DEFAULT_ACCOUNT, DEFAULT_URL_LIST, DEFAULT_RELAY_LIST } from '../common';
+import type { Relay } from '../common';
+import { DEFAULT_ACCOUNT, DEFAULT_URL_LIST, DEFAULT_RELAY_LIST } from '../common';
 
 type Store = {
   account: string;

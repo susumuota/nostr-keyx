@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 import { useCallback, useState } from 'react';
-import { Typography, Box, Divider, List, Tooltip, IconButton, Icon, Link } from '@mui/material';
+import { Typography, Box, Divider, List, Tooltip, IconButton, Icon } from '@mui/material';
 
 import type { Relay } from '../common';
 import { useStore } from './useStore';

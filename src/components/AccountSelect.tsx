@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 import { useCallback, useState } from 'react';
-import { Box, FormControl, Icon, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, Tooltip } from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material';
+import { Box, FormControl, Icon, IconButton, InputLabel, MenuItem, Select, Tooltip } from '@mui/material';
 
 import { useStore } from './useStore';
 import { ConfirmDialog } from './ConfirmDialog';
